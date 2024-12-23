@@ -1,20 +1,11 @@
 from rest_framework import serializers
 from .models import Productos, Usuarios, Pedidos, Proveedores
 
-class ProductosSerializer(serializers.ModelSerializer):
-
-    productos_proveedor = serializers.ReadOnlyField(source ='id_proveedor.nombre')
-    productos_usuario = serializers.ReadOnlyField(source = 'id_usuario.nombre')
-    
-    class Meta():
-        model = Productos
-        exclude = ['id_usuario']
-
 class UsuariosSerializer(serializers.ModelSerializer):
     
     class Meta():
         model = Usuarios
-        fields = '__all__'
+        fields = ['nombre', 'apellido', 'correo', 'username', 'password','cargo', 'rut' ]
 
 class PedidosSerializer(serializers.ModelSerializer):
 
@@ -31,4 +22,18 @@ class ProveedoresSerializer(serializers.ModelSerializer):
     
     class Meta():
         model = Proveedores
-        exclude = ['id_usuario']
+        fields = '__all__'
+
+class ProductosSerializer(serializers.ModelSerializer):
+
+    productos_proveedor = ProveedoresSerializer(read_only=True)
+    productos_usuario = serializers.ReadOnlyField(source = 'id_usuario.id')
+    
+    class Meta():
+        model = Productos
+        fields = '__all__'
+
+    def create(self, validated_data):
+        # Asigna automáticamente el id_usuario del usuario autenticado
+        validated_data['id_usuario'] = self.context['request'].user  # Esto asigna al usuario autenticado
+        return super().create(validated_data)
