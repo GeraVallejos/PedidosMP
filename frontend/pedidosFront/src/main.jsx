@@ -4,6 +4,8 @@ import { RouterProvider } from "react-router"
 import { getRoutes } from './routes/routes';
 import { Provider } from 'react-redux';
 import store from './store';
+import './styles.css'
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const router = getRoutes();
 

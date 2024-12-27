@@ -6,6 +6,7 @@ import App from "../App";
 import ProveedorPage from "../pages/ProveedorPage";
 import LoginPage from "../pages/LoginPage";
 import { privateLoader, publicLoader } from "./loader";
+import PedidoPage from "../pages/PedidoPage";
 
 
 export const getRoutes = () => createBrowserRouter([
@@ -29,6 +30,10 @@ export const getRoutes = () => createBrowserRouter([
             {
                 path: "proveedor",
                 element: <ProveedorPage />,
+            },
+            {
+                path: "pedidos",
+                element: <PedidoPage />,
             },
 
         ]

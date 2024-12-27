@@ -34,6 +34,7 @@ class ProductosSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def create(self, validated_data):
+    
         # Asigna automáticamente el id_usuario del usuario autenticado
-        validated_data['id_usuario'] = self.context['request'].user  # Esto asigna al usuario autenticado
+        validated_data['id_usuario'] = self.context['request'].user 
         return super().create(validated_data)

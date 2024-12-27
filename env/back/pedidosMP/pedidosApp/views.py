@@ -8,11 +8,12 @@ from rest_framework.exceptions import PermissionDenied
 class ProductoView(viewsets.ModelViewSet):
     serializer_class = ProductosSerializer
     queryset = Productos.objects.all()
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     
     def perform_create(self, serializer):
         serializer.save(id_usuario= self.request.user)
-        
+    
+ 
 
 class UsuarioView(viewsets.ModelViewSet):
     serializer_class = UsuariosSerializer

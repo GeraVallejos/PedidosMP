@@ -157,7 +157,7 @@ CORS_ALLOW_HEADERS = [
 ]
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),  # Tiempo de vida del token
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=360),  # Tiempo de vida del token
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),     # Tiempo de vida del token de refresco
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,

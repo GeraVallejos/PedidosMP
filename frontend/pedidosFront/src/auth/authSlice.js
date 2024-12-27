@@ -18,7 +18,7 @@ export const login = createAsyncThunk(
 
             return { access, refresh };
         } catch (error) {
-            return rejectWithValue(error.response.data.detail || 'Error de autenticación');
+            return rejectWithValue('Error de autenticación');
         }
     }
 );
@@ -28,6 +28,7 @@ export const logout = createAsyncThunk('auth/logout', async () => {
     // Elimina los tokens del localStorage
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
+    return true;
 });
 
 export const authSlice = createSlice({

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import axios from "axios";
+import decodeJWT from "../helpers/decodeJWT";
 
 
 const ProductosForm = () => {
@@ -68,15 +69,15 @@ const ProductosForm = () => {
         if (!token) {
             console.log('Token no encontrado');
             return;
-        } else {
-            console.log('este es tu token: ' + token)
         }
         const erroresValidacion = validateForm();
         if (!erroresValidacion) {
             return;
         }
+        const id_usuario = decodeJWT(token);
 
-        const data = {codigo: formData.codigo,
+        const data = {
+            codigo: formData.codigo,
             nombre: formData.nombre,
             unidad: formData.unidad,
             cantidad_stock: formData.cantidad_stock,
@@ -85,20 +86,21 @@ const ProductosForm = () => {
             costo_venta: parseFloat(formData.costo_venta),
             bodega: formData.bodega,
             id_proveedor: parseInt(formData.id_proveedor),
-            descripcion: formData.descripcion,}
-        console.log(data)
+            descripcion: formData.descripcion,
+            id_usuario: id_usuario
+        }
 
         try {
-            const respuesta = await axios.post("http://localhost:8000/api/v1/producto/", {
-                data
-            },
-                {
-                    headers: {
-                        'Authorization': `Bearer ${token}`  // Token de autenticación
-                    }
-                });
+            const respuesta = await axios.post("http://localhost:8000/api/v1/producto/",
+                data, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
 
-            setMensaje(respuesta.data.mensaje || "Registro exitoso.");
+            });
+
+            setMensaje(respuesta.mensaje || "Registro exitoso.");
             setFormData({
                 codigo: '',
                 nombre: '',
@@ -110,13 +112,21 @@ const ProductosForm = () => {
                 bodega: '',
                 id_proveedor: '',
                 descripcion: '',
-            });
+            })
             setErrors({});
         } catch (error) {
-            console.log(error.response)
-            setMensaje(
-                error.response?.data?.mensaje || "Ocurrió un error en el registro."
-            );
+            if (error.response) {
+                // El servidor respondió con un código de estado fuera del rango 2xx
+                console.error('Error en la respuesta del servidor:', error.response.data);
+                console.error('Código de estado:', error.response.status);
+                console.error('Encabezados:', error.response.headers);
+            } else if (error.request) {
+                // La solicitud fue hecha pero no se recibió respuesta
+                console.error('No se recibió respuesta del servidor:', error.request);
+            } else {
+                // Ocurrió un error al configurar la solicitud
+                console.error('Error al configurar la solicitud:', error.message);
+            }
         }
     };
 

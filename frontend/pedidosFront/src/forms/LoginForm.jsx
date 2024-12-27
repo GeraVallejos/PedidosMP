@@ -19,7 +19,7 @@ const LoginForm = () => {
             const resultAction = await dispatch(login({ username, password })).unwrap();
 
             if (resultAction) {
-                // Redirige al usuario a una página protegida (por ejemplo, "/productos")
+                // Redirige al usuario a una página protegida
                 navigate("/productos");
             }
         } catch (err) {
@@ -28,56 +28,39 @@ const LoginForm = () => {
     };
 
     return (
-        <div style={{ maxWidth: "400px", margin: "50px auto", textAlign: "center" }}>
+        <div className="login-container">
             <h1>Iniciar Sesión</h1>
-            <form onSubmit={handleSubmit}>
-                <div style={{ marginBottom: "15px" }}>
+            <form onSubmit={handleSubmit} className="login-form">
+                <div className="form-group">
+                    <label htmlFor="username">Nombre de Usuario</label>
                     <input
                         type="text"
                         placeholder="Nombre de Usuario"
                         value={username}
+                        autoComplete="username"
                         onChange={(e) => setUsername(e.target.value)}
-                        style={{
-                            width: "100%",
-                            padding: "10px",
-                            borderRadius: "5px",
-                            border: "1px solid #ccc",
-                        }}
                         required
                     />
                 </div>
-                <div style={{ marginBottom: "15px" }}>
+                <div className="form-group">
+                    <label htmlFor="password">Contraseña</label>
                     <input
                         type="password"
                         placeholder="Contraseña"
+                        autoComplete="current-password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        style={{
-                            width: "100%",
-                            padding: "10px",
-                            borderRadius: "5px",
-                            border: "1px solid #ccc",
-                        }}
                         required
                     />
                 </div>
-                <button
+                <button className="btn-login"
                     type="submit"
                     disabled={loading}
-                    style={{
-                        width: "100%",
-                        padding: "10px",
-                        backgroundColor: "#007bff",
-                        color: "#fff",
-                        border: "none",
-                        borderRadius: "5px",
-                        cursor: "pointer",
-                    }}
                 >
                     {loading ? "Cargando..." : "Iniciar Sesión"}
                 </button>
             </form>
-            {error && <p style={{ color: "red", marginTop: "10px" }}>{error}</p>}
+            {error && <p className="error-message">{error}</p>}
         </div>
     );
 };

@@ -1,5 +1,6 @@
 import { useState } from "react"
 import axios from "axios";
+import decodeJWT from "../helpers/decodeJWT";
 
 
 const ProveedorForm = () => {
@@ -13,11 +14,11 @@ const ProveedorForm = () => {
         descripcion: '',
         rut: '',
         giro: '',
-        id_usuario: ''
     });
 
     const [errors, setErrors] = useState({});
     const [mensaje, setMensaje] = useState("");
+    const token = localStorage.getItem('accessToken');
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -55,8 +56,13 @@ const ProveedorForm = () => {
 
         return Object.keys(newErrors).length === 0;
     };
+
+        const id_usuario = decodeJWT(token);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+
         const erroresValidacion = validateForm();
         if (Object.keys(erroresValidacion).length > 0) {
             setErrors(erroresValidacion);
@@ -73,8 +79,13 @@ const ProveedorForm = () => {
                 descripcion: formData.descripcion,
                 rut: formData.rut,
                 giro: formData.giro,
-                id_usuario: formData.id_usuario
-            });
+                id_usuario: id_usuario
+            }, {
+                headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+        });
 
             setMensaje(respuesta.data.mensaje || "Registro exitoso.");
             setFormData({
@@ -86,7 +97,6 @@ const ProveedorForm = () => {
                 descripcion: '',
                 rut: '',
                 giro: '',
-                id_usuario: ''
             });
             setErrors({});
         } catch (error) {
@@ -203,19 +213,6 @@ const ProveedorForm = () => {
                         style={{ width: '100%', padding: '0.5rem', marginTop: '0.5rem' }}
                     />
                     {errors.giro && <p style={{ color: 'red' }}>{errors.giro}</p>}
-                </div>
-
-                <div style={{ marginBottom: '1rem' }}>
-                    <label htmlFor="id_usuario">id_usuario:</label>
-                    <input
-                        type="text"
-                        id="id_usuario"
-                        name="id_usuario"
-                        value={formData.id_usuario}
-                        onChange={handleChange}
-                        style={{ width: '100%', padding: '0.5rem', marginTop: '0.5rem' }}
-                    />
-                    {errors.id_usuario && <p style={{ color: 'red' }}>{errors.id_usuario}</p>}
                 </div>
 
                 <button type="submit" style={{ padding: '0.5rem 1rem', backgroundColor: '#007BFF', color: 'white', border: 'none', cursor: 'pointer' }}>

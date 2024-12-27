@@ -1,0 +1,90 @@
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 250px;
+    background-color: #343a40;
+    padding-top: 60px;
+    transition: transform 0.3s ease-in-out;
+    z-index: 99;
+    /* Sidebar debajo del navbar */
+}
+
+.sidebar ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.sidebar ul li {
+    padding: 15px;
+}
+
+.sidebar ul li a {
+    color: white;
+    text-decoration: none;
+    display: block;
+}
+
+.sidebar ul li a:hover {
+    background-color: #495057;
+}
+
+/* Estilos para el contenido */
+.content {
+    margin-left: 250px;
+    padding: 20px;
+    transition: margin-left 0.3s ease-in-out;
+}
+
+.shifted {
+    margin-left: 0;
+}
+
+.sidebar-toggle-btn {
+    display: none;
+}
+
+/* Aseguramos que el navbar esté encima del sidebar */
+.navbar {
+    z-index: 100;
+    padding: 0px;
+    
+}
+
+.brand-navbar img{
+    z-index: 100;
+
+}
+
+@media (max-width: 767px) {
+    .sidebar {
+        display: none;
+    }
+
+    .sidebar.active {
+        display: block;
+    }
+
+    .content {
+        margin-left: 0;
+    }
+
+    .sidebar-toggle-btn {
+        position: absolute;
+        top: 4px;
+        left: 20px;
+        z-index: 1050;
+        background: transparent;
+        border: none;
+        color: black;
+        font-size: 30px;
+        cursor: pointer;
+        display: block;
+    }
+
+    .brand-navbar img{
+        z-index: 100;
+        margin-left: 70px;
+    }
+}
