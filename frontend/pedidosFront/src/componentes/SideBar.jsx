@@ -12,6 +12,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
           <li><a href="http://localhost:5173/productos">Productos</a></li>
           <li><a href="http://localhost:5173/usuario">Usuarios</a></li>
           <li><a href="http://localhost:5173/pedidos">Pedidos</a></li>
+          <li><a href="http://localhost:5173/proveedor">Proveedores</a></li>
           <li><BotonLogout/></li>
         </ul>
       </div>

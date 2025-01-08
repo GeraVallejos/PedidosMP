@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { login } from "../auth/authSlice";
 import { useNavigate } from "react-router";
+import { Button, Grid2, TextField } from "@mui/material";
 
 const LoginForm = () => {
     const dispatch = useDispatch();
@@ -20,7 +21,7 @@ const LoginForm = () => {
 
             if (resultAction) {
                 // Redirige al usuario a una página protegida
-                navigate("/productos");
+                navigate("/pedidos");
             }
         } catch (err) {
             console.error("Error durante el login:", err);
@@ -28,40 +29,42 @@ const LoginForm = () => {
     };
 
     return (
-        <div className="login-container">
-            <h1>Iniciar Sesión</h1>
-            <form onSubmit={handleSubmit} className="login-form">
-                <div className="form-group">
-                    <label htmlFor="username">Nombre de Usuario</label>
-                    <input
+        <form onSubmit={handleSubmit} >
+            <Grid2 container direction={'column'}>
+                <Grid2 item xs={12} sx={{ mt: 2 }}>
+                    <TextField
+                        label="Usuario"
                         type="text"
-                        placeholder="Nombre de Usuario"
-                        value={username}
+                        placeholder='Nombre de Usuario'
+                        fullWidth
                         autoComplete="username"
                         onChange={(e) => setUsername(e.target.value)}
                         required
                     />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="password">Contraseña</label>
-                    <input
+                </Grid2>
+
+                <Grid2 item xs={12} sx={{ mt: 2 }}>
+                    <TextField
+                        label="Contraseña"
                         type="password"
-                        placeholder="Contraseña"
+                        placeholder='Contraseña'
+                        fullWidth
                         autoComplete="current-password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
                     />
-                </div>
-                <button className="btn-login"
-                    type="submit"
-                    disabled={loading}
-                >
-                    {loading ? "Cargando..." : "Iniciar Sesión"}
-                </button>
-            </form>
-            {error && <p className="error-message">{error}</p>}
-        </div>
+                </Grid2>
+                <Grid2 container direction={'column'}>
+                <Grid2 item xs={12} alignContent={"center"} sx={{ mt: 2 }}>
+                    <Button variant='contained' type="submit" fullWidth disabled={loading}>
+                        {loading ? "Ingresando..." : "Iniciar Sesión"}
+                    </Button>
+                </Grid2>
+                </Grid2>
+                {error && <p className="error-message">{error}</p>}
+            </Grid2>
+        </form>
     );
 };
 

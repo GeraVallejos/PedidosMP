@@ -2,27 +2,30 @@ import { Outlet } from "react-router"
 import { useState } from "react";
 import Sidebar from "./componentes/sideBar";
 import NavbarComponent from "./componentes/NavBar";
+import AppTheme from "./theme/AppTheme";
 
 function App() {
-    const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
-    // Maneja el colapso del sidebar en pantallas pequeñas
-    const toggleSidebar = () => setIsOpen(!isOpen);
+  // Maneja el colapso del sidebar en pantallas pequeñas
+  const toggleSidebar = () => setIsOpen(!isOpen);
 
-    return (
-        <div className="App">
-      {/* Navbar */}
-      <NavbarComponent />
+  return (
+    <AppTheme>
+      <div className="App">
 
-      {/* Sidebar */}
-      <Sidebar isOpen={isOpen} toggleSidebar={toggleSidebar} />
+        <NavbarComponent />
 
-      {/* Contenido Principal */}
-      <div className={`content ${isOpen ? 'shifted' : ''}`}>
-        <Outlet/>
+
+        <Sidebar isOpen={isOpen} toggleSidebar={toggleSidebar} />
+
+
+        <div className={`content ${isOpen ? 'shifted' : ''}`}>
+          <Outlet />
+        </div>
       </div>
-    </div>
-    );
+    </AppTheme>
+  );
 }
 
 export default App
