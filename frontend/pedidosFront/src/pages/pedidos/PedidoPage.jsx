@@ -1,6 +1,7 @@
 import BotonCrear from "../../componentes/BotonCrear";
-import GetPedidos from "../../componentes/GetPedidos";
+import GetPedidos from "../../componentes/pedidos/GetPedidos";
 import { useAuthGuard } from "../../hooks/useAuthGuard"
+
 
 
 const PedidoPage = () => {
@@ -10,10 +11,10 @@ const PedidoPage = () => {
   const pedido = 'pedidos'
 
   return (
-  
+
     <>
-    <div><BotonCrear ruta={pedido} /></div>
-    <div><GetPedidos /></div>
+      <BotonCrear ruta={pedido} />
+      <GetPedidos />
     </>
   )
 }

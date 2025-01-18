@@ -1,12 +1,13 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { login } from "../auth/authSlice";
 import { useNavigate } from "react-router";
-import { Button, Grid2, TextField } from "@mui/material";
+import { Alert, Button, Grid2, TextField } from "@mui/material";
 
 const LoginForm = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const usernameRef = useRef(null);
     const { loading, error } = useSelector((state) => state.auth);
 
     const [username, setUsername] = useState("");
@@ -28,10 +29,27 @@ const LoginForm = () => {
         }
     };
 
+    useEffect(() => {
+   
+        if (error!=null){
+            setTimeout(()=>{
+                navigate(0);
+                usernameRef.current.focus();
+            },2000)
+      }
+    }, [navigate, error])
+
+    useEffect(() => {
+        if(error===null){
+            usernameRef.current.focus();
+        }
+    },[error])
+    
+
     return (
         <form onSubmit={handleSubmit} >
             <Grid2 container direction={'column'}>
-                <Grid2 item xs={12} sx={{ mt: 2 }}>
+                <Grid2 xs={12} sx={{ mt: 2 }}>
                     <TextField
                         label="Usuario"
                         type="text"
@@ -40,10 +58,11 @@ const LoginForm = () => {
                         autoComplete="username"
                         onChange={(e) => setUsername(e.target.value)}
                         required
+                        inputRef={usernameRef}
                     />
                 </Grid2>
 
-                <Grid2 item xs={12} sx={{ mt: 2 }}>
+                <Grid2 xs={12} sx={{ mt: 2 }}>
                     <TextField
                         label="Contraseña"
                         type="password"
@@ -56,13 +75,23 @@ const LoginForm = () => {
                     />
                 </Grid2>
                 <Grid2 container direction={'column'}>
-                <Grid2 item xs={12} alignContent={"center"} sx={{ mt: 2 }}>
-                    <Button variant='contained' type="submit" fullWidth disabled={loading}>
-                        {loading ? "Ingresando..." : "Iniciar Sesión"}
-                    </Button>
+                    <Grid2 xs={12} alignContent={"center"} sx={{ mt: 2 }}>
+                        <Button variant='contained' type="submit" fullWidth disabled={loading}>
+                            {loading ? "Ingresando..." : "Iniciar Sesión"}
+                        </Button>
+                    </Grid2>
                 </Grid2>
-                </Grid2>
-                {error && <p className="error-message">{error}</p>}
+                                
+                    {error && 
+                    <Alert variant="outlined" severity="error" sx={{
+                    mt: 2,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    textAlign: 'center'
+                }}>{error}</Alert>}
+                
+
             </Grid2>
         </form>
     );

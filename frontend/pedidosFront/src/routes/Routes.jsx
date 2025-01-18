@@ -10,6 +10,7 @@ import PedidoPage from "../pages/pedidos/PedidoPage";
 import CrearProductosPage from "../pages/productos/CrearProductosPage";
 import CrearProveedorPage from "../pages/proveedores/CrearProveedorPage";
 import CrearPedidosPage from "../pages/pedidos/CrearPedidosPage";
+import HistoricoPedidosPage from "../pages/pedidos/HistoricoPedidosPage";
 
 
 export const getRoutes = () => createBrowserRouter([
@@ -49,6 +50,10 @@ export const getRoutes = () => createBrowserRouter([
             {
                 path: "pedidos-crear",
                 element: <CrearPedidosPage />,
+            },
+            {
+                path: "pedidos-historico",
+                element: <HistoricoPedidosPage />,
             },
 
         ]

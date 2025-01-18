@@ -44,3 +44,5 @@ class PedidosView(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(id_usuario= self.request.user)
+
+    

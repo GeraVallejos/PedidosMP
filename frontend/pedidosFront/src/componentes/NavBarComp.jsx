@@ -1,9 +1,9 @@
 import * as React from 'react';
-import {Grid2, Typography} from '@mui/material'
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
 import Menu from '@mui/material/Menu';
 import MenuIcon from '@mui/icons-material/Menu';
 import Container from '@mui/material/Container';
@@ -11,17 +11,16 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import AdbIcon from '@mui/icons-material/Adb';
+import { Link } from '@mui/material'
 
-// eslint-disable-next-line react/prop-types
-const AuthLayout = ({children}) => {
 
-  const pages = ['Products', 'Pricing', 'Blog'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
-
+// eslint-disable-next-line react/prop-types
+const  NavBarComp = ({drawerWidth}) => {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+ 
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -38,32 +37,15 @@ const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
     setAnchorElUser(null);
   };
 
-
   return (
-    <>
-    <AppBar position="static">
+    <AppBar position='fixed' sx={{ 
+      width: { sm: `calc(100% - ${ drawerWidth }px)` },
+      ml: { sm: `${ drawerWidth }px` }
+   }}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
-          <Typography
-            variant="h6"
-            noWrap
-            component="a"
-            href="#app-bar-with-responsive-menu"
-            sx={{
-              mr: 2,
-              display: { xs: 'none', md: 'flex' },
-              fontFamily: 'monospace',
-              fontWeight: 700,
-              letterSpacing: '.3rem',
-              color: 'inherit',
-              textDecoration: 'none',
-            }}
-          >
-            JJ DETERGENTES
-          </Typography>
-
-          <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
+          
+                    <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
             <IconButton
               size="large"
               aria-label="account of current user"
@@ -90,42 +72,47 @@ const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
               onClose={handleCloseNavMenu}
               sx={{ display: { xs: 'block', md: 'none' } }}
             >
-              {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography sx={{ textAlign: 'center' }}>{page}</Typography>
-                </MenuItem>
-              ))}
+              <Link href='/productos' underline='none'>
+            <Button onClick={handleCloseNavMenu}
+                sx={{ my: 2, color: 'primary', display: 'block' }}>
+                  <Typography tex sx={{fontWeight: 'bold'}}></Typography>
+            </Button>
+            </Link>
+            <Link href='/proveedor' underline='none'>
+            <Button onClick={handleCloseNavMenu}
+                sx={{ my: 2, color: 'primary', display: 'block' }}>
+                  PROVEEDORES
+            </Button>
+            </Link>
+            <Link href='/pedidos-historico' underline='none'>
+            <Button onClick={handleCloseNavMenu}
+                sx={{ my: 2, color: 'primary', display: 'block' }}>
+                  HISTÓRICO
+            </Button>
+            </Link>
             </Menu>
           </Box>
-          <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
-          <Typography
-            variant="h5"
-            noWrap
-            component="a"
-            href="#app-bar-with-responsive-menu"
-            sx={{
-              mr: 2,
-              display: { xs: 'flex', md: 'none' },
-              flexGrow: 1,
-              fontFamily: 'monospace',
-              fontWeight: 700,
-              letterSpacing: '.3rem',
-              color: 'inherit',
-              textDecoration: 'none',
-            }}
-          >
-            JJ DETERGENTES
-          </Typography>
+          
+          
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-            {pages.map((page) => (
-              <Button
-                key={page}
-                onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: 'white', display: 'block' }}
-              >
-                {page}
-              </Button>
-            ))}
+            <Link href='/productos' underline='none'>
+            <Button onClick={handleCloseNavMenu}
+                sx={{ my: 2, color: 'white', display: 'block' }}>
+                  PRODUCTOS
+            </Button>
+            </Link>
+            <Link href='/proveedor' underline='none'>
+            <Button onClick={handleCloseNavMenu}
+                sx={{ my: 2, color: 'white', display: 'block' }}>
+                  PROVEEDORES
+            </Button>
+            </Link>
+            <Link href='/pedidos-historico' underline='none'>
+            <Button onClick={handleCloseNavMenu}
+                sx={{ my: 2, color: 'white', display: 'block' }}>
+                  HISTÓRICO
+            </Button>
+            </Link>
           </Box>
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
@@ -159,20 +146,5 @@ const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
         </Toolbar>
       </Container>
     </AppBar>
-    <Grid2 container spacing={ 0 } direction="column" alignItems="center" justifyContent="center" 
-    sx={{padding: 4 }}>
-        <Grid2 className='box-shadow' xs={ 3 } sx={{ 
-            width: { sm: 450 },
-            backgroundColor: 'white', 
-            padding: 3, 
-            borderRadius: 2 
-        }}>
-            { children }
-        </Grid2>
-    </Grid2>
-    </>
-  );
-}
-
-
-export default AuthLayout
+)}
+export default NavBarComp;

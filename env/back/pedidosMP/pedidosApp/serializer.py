@@ -11,6 +11,8 @@ class PedidosSerializer(serializers.ModelSerializer):
 
     productos_usuario = serializers.ReadOnlyField(source = 'id_usuario.nombre')
     pedidos_producto = serializers.ReadOnlyField(source= 'id_producto.nombre')
+    pedidos_proveedor = serializers.ReadOnlyField(source= 'id_proveedor.nombre')
+    
 
     
     class Meta():
