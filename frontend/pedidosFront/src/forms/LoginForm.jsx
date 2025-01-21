@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { login } from "../auth/authSlice";
+import { fetchUser, login } from "../auth/authSlice";
 import { useNavigate } from "react-router";
 import { Alert, Button, Grid2, TextField } from "@mui/material";
 
@@ -19,6 +19,7 @@ const LoginForm = () => {
         try {
             // Despacha la acción de login
             const resultAction = await dispatch(login({ username, password })).unwrap();
+            dispatch(fetchUser())
 
             if (resultAction) {
                 // Redirige al usuario a una página protegida

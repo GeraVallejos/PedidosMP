@@ -3,6 +3,7 @@ import axios from 'axios';
 
 // Endpoint del backend
 const API_URL = 'http://localhost:8000/api/token/';
+const USER_INFO_URL = 'http://localhost:8000/api/v1/usuario/actual/'
 
 // Thunk para manejar el inicio de sesión
 export const login = createAsyncThunk(
@@ -31,6 +32,23 @@ export const logout = createAsyncThunk('auth/logout', async () => {
     return true;
 });
 
+export const fetchUser = createAsyncThunk(
+    'auth/fetchUser',
+    async (_, { rejectWithValue }) => {
+        try {
+            const token = localStorage.getItem('accessToken');
+            const response = await axios.get(USER_INFO_URL, {
+                headers: {
+                    Authorization: `Bearer ${token}`, 
+                },
+            });
+            return response.data; 
+        } catch (error) {
+            return rejectWithValue('No se pudieron obtener los datos del usuario');
+        }
+    }
+);
+
 export const authSlice = createSlice({
     name: 'auth',
     initialState: {
@@ -38,6 +56,7 @@ export const authSlice = createSlice({
         isAuthenticated: !!localStorage.getItem('accessToken'),
         loading: false,
         error: null,
+        user:null
     },
     reducers: {
         
@@ -60,6 +79,18 @@ export const authSlice = createSlice({
             .addCase(logout.fulfilled, (state) => {
                 state.token = null;
                 state.isAuthenticated = false;
+            })
+            .addCase(fetchUser.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchUser.fulfilled, (state, action) => {
+                state.loading = false;
+                state.user = action.payload; 
+            })
+            .addCase(fetchUser.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
             });
     },
 });

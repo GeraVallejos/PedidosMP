@@ -23,10 +23,10 @@ const MainLayout = ({ children }) => {
                 sx={{
                     flexGrow: 1,
                     p: 3,
-                    width: { sm: `calc(100% - ${drawerWidth}px)`, xs:'100%' }, // Ajuste el contenido para que no se solape con el sidebar
-                    height: '100vh', // Asegúrate de que el contenido ocupe toda la altura de la pantalla
-                    overflow: 'auto', // Para manejar el contenido que exceda el espacio visible
-                    marginTop: { xs: '56px', sm: '64px' } // Para que no se solape con el Navbar, que tiene una altura por defecto de 64px en MUI
+                    width: { sm: `calc(100% - ${drawerWidth}px)`, xs:'100%' }, 
+                    height: '100vh',
+                    overflow: 'auto', 
+                    marginTop: { xs: '56px', sm: '64px' }
                 }}>
                 {children}
             </Box>

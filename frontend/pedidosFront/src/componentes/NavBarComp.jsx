@@ -1,4 +1,4 @@
-import * as React from 'react';
+
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -12,15 +12,20 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import { Link } from '@mui/material'
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
+import FnLogout from '../helpers/fnLogout';
+import { useState } from 'react';
+import { useSelector } from 'react-redux';
 
 
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
 // eslint-disable-next-line react/prop-types
-const  NavBarComp = ({drawerWidth}) => {
-  const [anchorElNav, setAnchorElNav] = React.useState(null);
-  const [anchorElUser, setAnchorElUser] = React.useState(null);
- 
+const NavBarComp = ({ drawerWidth }) => {
+  const [anchorElNav, setAnchorElNav] = useState(null);
+  const [anchorElUser, setAnchorElUser] = useState(null);
+
+  const { user } = useSelector((state) => state.auth);
+
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -37,15 +42,17 @@ const  NavBarComp = ({drawerWidth}) => {
     setAnchorElUser(null);
   };
 
+  console.log(user)
+
   return (
-    <AppBar position='fixed' sx={{ 
-      width: { sm: `calc(100% - ${ drawerWidth }px)` },
-      ml: { sm: `${ drawerWidth }px` }
-   }}>
+    <AppBar position='fixed' sx={{
+      width: { sm: `calc(100% - ${drawerWidth}px)` },
+      ml: { sm: `${drawerWidth}px` }
+    }}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          
-                    <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
+
+          <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
             <IconButton
               size="large"
               aria-label="account of current user"
@@ -73,55 +80,60 @@ const  NavBarComp = ({drawerWidth}) => {
               sx={{ display: { xs: 'block', md: 'none' } }}
             >
               <Link href='/productos' underline='none'>
-            <Button onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: 'primary', display: 'block' }}>
-                  <Typography tex sx={{fontWeight: 'bold'}}></Typography>
-            </Button>
-            </Link>
-            <Link href='/proveedor' underline='none'>
-            <Button onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: 'primary', display: 'block' }}>
+                <Button onClick={handleCloseNavMenu}
+                  sx={{ my: 2, color: 'primary', display: 'block' }}>
+                  PRODUCTOS
+                </Button>
+              </Link>
+              <Link href='/proveedor' underline='none'>
+                <Button onClick={handleCloseNavMenu}
+                  sx={{ my: 2, color: 'primary', display: 'block' }}>
                   PROVEEDORES
-            </Button>
-            </Link>
-            <Link href='/pedidos-historico' underline='none'>
-            <Button onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: 'primary', display: 'block' }}>
+                </Button>
+              </Link>
+              <Link href='/pedidos-historico' underline='none'>
+                <Button onClick={handleCloseNavMenu}
+                  sx={{ my: 2, color: 'primary', display: 'block' }}>
                   HISTÓRICO
-            </Button>
-            </Link>
+                </Button>
+              </Link>
             </Menu>
           </Box>
-          
-          
+
+
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
             <Link href='/productos' underline='none'>
-            <Button onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: 'white', display: 'block' }}>
-                  PRODUCTOS
-            </Button>
+              <Button onClick={handleCloseNavMenu}
+                sx={{ my: 2, color: 'white', display: 'block', fontWeight:'bold' }}>
+                PRODUCTOS
+              </Button>
             </Link>
             <Link href='/proveedor' underline='none'>
-            <Button onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: 'white', display: 'block' }}>
-                  PROVEEDORES
-            </Button>
+              <Button onClick={handleCloseNavMenu}
+                sx={{ my: 2, color: 'white', display: 'block', fontWeight:'bold' }}>
+                PROVEEDORES
+              </Button>
             </Link>
             <Link href='/pedidos-historico' underline='none'>
-            <Button onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: 'white', display: 'block' }}>
-                  HISTÓRICO
-            </Button>
+              <Button onClick={handleCloseNavMenu}
+                sx={{ my: 2, color: 'white', display: 'block', fontWeight:'bold' }}>
+                HISTÓRICO
+              </Button>
             </Link>
           </Box>
           <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title="Open settings">
+            <Tooltip title="Configuración">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+              {user && user.nombre ? (
+                <Avatar>{user.nombre.slice(0,1) + user.apellido.slice(0,1)}</Avatar>)
+                : (
+                  // Fallback en caso de que 'user' no esté disponible
+                  <Avatar></Avatar>
+                )}
               </IconButton>
             </Tooltip>
             <Menu
-              sx={{ mt: '45px' }}
+              sx={{ mt: '60px' }}
               id="menu-appbar"
               anchorEl={anchorElUser}
               anchorOrigin={{
@@ -136,15 +148,20 @@ const  NavBarComp = ({drawerWidth}) => {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography sx={{ textAlign: 'center' }}>{setting}</Typography>
-                </MenuItem>
-              ))}
+              <MenuItem>
+                <Link href='/usuario' underline='none'>
+                  <Typography sx={{ textAlign: 'center' }}>Usuarios</Typography>
+                </Link>
+              </MenuItem>
+              <MenuItem onClick={FnLogout()} sx={{display: 'flex'}}>
+                  <ExitToAppIcon sx={{mr: '2px'}}/>
+                  <Typography >Salir</Typography>
+              </MenuItem>
             </Menu>
           </Box>
         </Toolbar>
       </Container>
     </AppBar>
-)}
+  )
+}
 export default NavBarComp;

@@ -3,6 +3,8 @@ from .serializer import ProductosSerializer, UsuariosSerializer, ProveedoresSeri
 from .models import Productos, Usuarios, Proveedores, Pedidos
 from rest_framework import permissions
 from rest_framework.exceptions import PermissionDenied
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
 
 class ProductoView(viewsets.ModelViewSet):
@@ -24,6 +26,13 @@ class UsuarioView(viewsets.ModelViewSet):
         user = serializer.save()
         user.set_password(user.password)
         user.save()
+
+    @action(detail=False, methods=['get'], permission_classes=[permissions.IsAuthenticated])
+    def actual(self, request):
+        # Devuelve el usuario autenticado
+        user = self.request.user  # Usuario autenticado
+        serializer = self.get_serializer(user)
+        return Response(serializer.data)
 
 class ProveedoresView(viewsets.ModelViewSet):
     serializer_class = ProveedoresSerializer
