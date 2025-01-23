@@ -1,6 +1,6 @@
 import { useState } from "react"
 import api from "../../helpers/interceptorJWT";
-import { DataGrid, GridToolbar } from '@mui/x-data-grid';
+import { DataGrid } from '@mui/x-data-grid';
 import { Box, Checkbox, Container, IconButton } from "@mui/material";
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
@@ -10,9 +10,13 @@ import Loading from "../Loading";
 import FetchPedido from "../../hooks/fetchPedidos";
 import esDataGrid from "../../helpers/DataGridTextEs";
 import { format } from 'date-fns'
+import * as XLSX from "xlsx"
+import CustomToolBar from "../CustomToolBar";
 
 
-const GetPedidos = () => {
+
+// eslint-disable-next-line react/prop-types
+const GetPedidos = ({ estado }) => {
 
     const [pedido, setPedido] = useState([]);
     const [error, setError] = useState(null);
@@ -84,14 +88,14 @@ const GetPedidos = () => {
             align: 'center',
             renderCell: (params) => (
                 <IconButton onClick={() => handleDelete(params.row.id_pedido)}>
-                    <DeleteForeverIcon />
+                    <DeleteForeverIcon sx={{ color: 'red' }} />
                 </IconButton>
             ),
         },
     ];
 
     //Hook para renderizar los pedidos deseados, estado depende de si quiero ver resueltos o no
-    FetchPedido(setPedido, setLoading, setError, false)
+    FetchPedido(setPedido, setLoading, setError, estado)
 
     const handleConfirmAction = async () => {
         if (!dialogParams) return;
@@ -109,7 +113,6 @@ const GetPedidos = () => {
                 resuelto: newResueltoValue,
 
             };
-            console.log(updatedPedido)
 
             const response = await api.put(
                 `http://localhost:8000/api/v1/pedido/${id}/`,
@@ -151,6 +154,33 @@ const GetPedidos = () => {
         setSelectedRow(null);
     };
 
+    // Función para exportar a Excel
+    const handleExport = () => {
+        if (pedido.length === 0) {
+            console.log("No hay datos para exportar");
+            return;
+          }
+        
+          // Crear una nueva estructura con encabezados personalizados
+          const formattedData = pedido.map((row) => ({
+            "Producto": row.pedidos_producto,
+            "Cantidad": row.cantidad,
+            "Usuario": row.productos_usuario,
+            "Fecha de Creación": row.fecha_pedido,
+            "Fecha de Despacho": row.fecha_despacho,
+            "Finalizado": row.resuelto ? "Sí" : "No",
+          }));
+        // Convertir los datos del DataGrid a formato de hoja de cálculo
+        const worksheet = XLSX.utils.json_to_sheet(formattedData);
+        const workbook = XLSX.utils.book_new();
+
+        // Agregar la hoja de cálculo al libro de trabajo
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Pedidos");
+
+        // Generar archivo Excel y desencadenar descarga
+        XLSX.writeFile(workbook, "Pedidos.xlsx");
+    };
+
     return (
         <Box sx={{ p: 0, display: "flex", justifyContent: "center", alignItems: "center", position: "relative", width: "100%", height: "78vh" }}>
             <Box
@@ -167,7 +197,7 @@ const GetPedidos = () => {
 
             {!loading && !error && (
                 <Container sx={{ ml: -5, height: 500, width: '100%', marginRight: '3px' }}>
-
+                    {/* el DataGrid contiene un boton diferente para exportar a xlxs */}
                     <DataGrid
                         rows={pedido}
                         columns={columns}
@@ -175,7 +205,8 @@ const GetPedidos = () => {
                         rowsPerPageOptions={[10]}
                         disableRowSelectionOnClick
                         getRowId={(row) => row.id_pedido}
-                        slots={{ toolbar: GridToolbar }}
+                        slots={{ toolbar: CustomToolBar}}
+                        slotProps={{toolbar: {onExport: handleExport}}}
                         localeText={esDataGrid}
                         initialState={{
                             sorting: {

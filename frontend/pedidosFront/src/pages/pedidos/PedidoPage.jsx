@@ -14,7 +14,7 @@ const PedidoPage = () => {
 
     <>
       <BotonCrear ruta={pedido} />
-      <GetPedidos />
+      <GetPedidos estado={false} />
     </>
   )
 }

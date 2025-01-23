@@ -12,16 +12,12 @@ const BotonCrear = ({ruta}) => {
   return (
     <Box sx={{display: 'flex', justifyContent: 'center'}}>
     <Button variant="contained"
-        color="secondary"
+        color="primary"
         size="large"
-        //endIcon={<ArrowForwardIosIcon />}
         sx={{
-          borderRadius: '5px', // Botón redondeado
+          borderRadius: '5px', 
           padding: '10px 20px',
-          boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)', // Sombra moderna
-          '&:hover': {
-            backgroundColor: '#056900', // Azul más oscuro al pasar el cursor
-          },
+          boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)', 
           mb:2,
           width: 500,
           fontWeight: 'bold'

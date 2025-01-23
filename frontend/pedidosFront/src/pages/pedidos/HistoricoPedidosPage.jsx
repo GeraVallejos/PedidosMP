@@ -1,5 +1,5 @@
 
-import HistoricoPedidos from "../../componentes/pedidos/HistoricoPedidos";
+import GetPedidos from "../../componentes/pedidos/GetPedidos";
 import { useAuthGuard } from "../../hooks/useAuthGuard"
 
 
@@ -10,9 +10,7 @@ const HistoricoPedidosPage = () => {
 
   return (
 
-    <>
-      <HistoricoPedidos />
-    </>
+      <GetPedidos estado={true}/>
   )
 }
 

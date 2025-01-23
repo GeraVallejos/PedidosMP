@@ -11,11 +11,12 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import { Link } from '@mui/material'
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import FnLogout from '../helpers/fnLogout';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
+import { Link as RouterLink} from 'react-router';
+import { Link} from '@mui/material';
 
 
 
@@ -41,8 +42,6 @@ const NavBarComp = ({ drawerWidth }) => {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
-
-  console.log(user)
 
   return (
     <AppBar position='fixed' sx={{
@@ -79,19 +78,19 @@ const NavBarComp = ({ drawerWidth }) => {
               onClose={handleCloseNavMenu}
               sx={{ display: { xs: 'block', md: 'none' } }}
             >
-              <Link href='/productos' underline='none'>
+              <Link component={RouterLink} to='/productos' underline='none'>
                 <Button onClick={handleCloseNavMenu}
                   sx={{ my: 2, color: 'primary', display: 'block' }}>
                   PRODUCTOS
                 </Button>
               </Link>
-              <Link href='/proveedor' underline='none'>
+              <Link component={RouterLink} to='/proveedor' underline='none'>
                 <Button onClick={handleCloseNavMenu}
                   sx={{ my: 2, color: 'primary', display: 'block' }}>
                   PROVEEDORES
                 </Button>
               </Link>
-              <Link href='/pedidos-historico' underline='none'>
+              <Link component={RouterLink} to='/pedidos-historico' underline='none'>
                 <Button onClick={handleCloseNavMenu}
                   sx={{ my: 2, color: 'primary', display: 'block' }}>
                   HISTÓRICO
@@ -102,19 +101,19 @@ const NavBarComp = ({ drawerWidth }) => {
 
 
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-            <Link href='/productos' underline='none'>
+            <Link component={RouterLink} to='/productos' underline='none'>
               <Button onClick={handleCloseNavMenu}
                 sx={{ my: 2, color: 'white', display: 'block', fontWeight:'bold' }}>
                 PRODUCTOS
               </Button>
             </Link>
-            <Link href='/proveedor' underline='none'>
+            <Link component={RouterLink} to='/proveedor' underline='none'>
               <Button onClick={handleCloseNavMenu}
                 sx={{ my: 2, color: 'white', display: 'block', fontWeight:'bold' }}>
                 PROVEEDORES
               </Button>
             </Link>
-            <Link href='/pedidos-historico' underline='none'>
+            <Link component={RouterLink} to='/pedidos-historico' underline='none'>
               <Button onClick={handleCloseNavMenu}
                 sx={{ my: 2, color: 'white', display: 'block', fontWeight:'bold' }}>
                 HISTÓRICO
@@ -149,13 +148,13 @@ const NavBarComp = ({ drawerWidth }) => {
               onClose={handleCloseUserMenu}
             >
               <MenuItem>
-                <Link href='/usuario' underline='none'>
+                <Link component={RouterLink} to='/usuario' underline='none'>
                   <Typography sx={{ textAlign: 'center' }}>Usuarios</Typography>
                 </Link>
               </MenuItem>
               <MenuItem onClick={FnLogout()} sx={{display: 'flex'}}>
-                  <ExitToAppIcon sx={{mr: '2px'}}/>
-                  <Typography >Salir</Typography>
+                  <ExitToAppIcon sx={{mr: '2px', color: 'red'}}/>
+                  <Typography color='primary'>Salir</Typography>
               </MenuItem>
             </Menu>
           </Box>

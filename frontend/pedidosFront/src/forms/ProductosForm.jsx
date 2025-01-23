@@ -1,280 +1,316 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState } from "react";
+import {
+  TextField,
+  Button,
+  Select,
+  MenuItem,
+  InputLabel,
+  Typography,
+  Box,
+  FormControl,
+  Snackbar,
+  Alert,
+} from "@mui/material";
+import Grid from "@mui/material/Grid2";
 import axios from "axios";
 import decodeJWT from "../helpers/decodeJWT";
 
-
 const ProductosForm = () => {
+  const [formData, setFormData] = useState({
+    codigo: "",
+    nombre: "",
+    unidad: "",
+    cantidad_stock: "",
+    cantidad_inventario: "",
+    costo_compra: "",
+    costo_venta: "",
+    bodega: "",
+    id_proveedor: "",
+    descripcion: "",
+  });
 
-    const [formData, setFormData] = useState({
-        codigo: '',
-        nombre: '',
-        unidad: '',
-        cantidad_stock: '',
-        cantidad_inventario: '',
-        costo_compra: '',
-        costo_venta: '',
-        bodega: '',
-        id_proveedor: '',
-        descripcion: '',
+  const [errors, setErrors] = useState({});
+  const [mensaje, setMensaje] = useState("");
+  const [proveedores, setProveedores] = useState([]);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [alertType, setAlertType] = useState("success");
+
+  useEffect(() => {
+    const fetchProveedores = async () => {
+      const response = await axios.get("http://localhost:8000/api/v1/proveedor/");
+      setProveedores(response.data);
+    };
+    fetchProveedores();
+  }, []);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+    // Si el campo tiene un error y el usuario empieza a escribir, se elimina el error
+  if (errors[name]) {
+    setErrors((prevErrors) => {
+      const updatedErrors = { ...prevErrors };
+      delete updatedErrors[name]; // Eliminar el error específico
+      return updatedErrors;
     });
+  }
+  };
 
-    const [errors, setErrors] = useState({});
-    const [mensaje, setMensaje] = useState("");
-    const [proveedores, setProveedores] = useState([]);
+  const validateForm = () => {
+    const newErrors = {};
 
-    useEffect(() => {
-        const fetchProveedores = async () => {
-            const response = await axios.get("http://localhost:8000/api/v1/proveedor/");
-            setProveedores(response.data);
-        };
-        fetchProveedores();
-    }, []);
+    if (!formData.codigo.trim()) {
+      newErrors.codigo = "El código es obligatorio.";
+    }
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
+    if (!formData.nombre) {
+      newErrors.nombre = "El nombre es obligatorio.";
+    }
+
+    if (!formData.cantidad_stock) {
+      newErrors.cantidad_stock = "La cantidad es obligatoria.";
+    }
+    if (!formData.costo_compra) {
+      newErrors.costo_compra = "El costo es obligatorio.";
+    }
+    if (!formData.bodega) {
+      newErrors.bodega = "La bodega es obligatoria.";
+    }
+    if (!formData.id_proveedor) {
+      newErrors.id_proveedor = "El proveedor es obligatorio.";
+    }
+
+    setErrors(newErrors);
+
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const token = localStorage.getItem("accessToken");
+
+    if (!token) {
+      console.log("Token no encontrado");
+      return;
+    }
+    const erroresValidacion = validateForm();
+    if (!erroresValidacion) {
+      return;
+    }
+    const id_usuario = decodeJWT(token);
+
+    const data = {
+      ...formData,
+      costo_compra: parseFloat(formData.costo_compra),
+      costo_venta: parseFloat(formData.costo_venta),
+      id_proveedor: parseInt(formData.id_proveedor),
+      id_usuario: id_usuario,
     };
 
-    const validateForm = () => {
-        const newErrors = {};
+    try {
+      const respuesta = await axios.post("http://localhost:8000/api/v1/producto/", data, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(respuesta)
 
-        if (!formData.codigo.trim()) {
-            newErrors.codigo = 'El código es obligatorio.';
-        }
+      setMensaje(respuesta.mensaje || "Registro exitoso.");
+      setAlertType('success')
+      setOpenSnackbar(true)
+      setFormData({
+        codigo: "",
+        nombre: "",
+        unidad: "",
+        cantidad_stock: "",
+        cantidad_inventario: "",
+        costo_compra: "",
+        costo_venta: "",
+        bodega: "",
+        id_proveedor: "",
+        descripcion: "",
+      });
+      setErrors({});
+      
+    } catch (error) {
+      console.error("Error:", error);
+      // Verifica si existe un error de duplicacion de codigo, el mensaje viene de Django
+      if(error.response.data.codigo[0]){
+        setMensaje('Este código ya existe')
+        setAlertType('warning')
+        setOpenSnackbar(true)
+      }
+      setTimeout(() => {
+        setMensaje("");
+      }, 2500);
+    }
+  };
+  const handleCloseSnackbar = () => {
+    setOpenSnackbar(false); // Cerrar la alerta flotante
+  };
 
-        if (!formData.nombre) {
-            newErrors.nombre = 'El nombre es obligatorio.';
-        }
+  return (
+    <Box
+      sx={{
+        maxWidth: "800px",
+        margin: "0.5rem auto",
+        padding: "1rem",
+        backgroundColor: "#f9f9f9",
+        borderRadius: "8px",
+        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+      }}
+    >
+      <Typography variant="h6" align="center" gutterBottom>
+        Registro de Producto
+      </Typography>
+      <form onSubmit={handleSubmit}>
+        <Grid container spacing={2}>
+          <Grid size={{xs:12, sm:6}}>
+            <TextField
+              fullWidth
+              label="Código"
+              name="codigo"
+              value={formData.codigo}
+              onChange={handleChange}
+              error={!!errors.codigo}
+              helperText={errors.codigo}
+            />
+          </Grid>
+          <Grid size={{xs:12, sm:6}}>
+            <TextField
+              fullWidth
+              label="Nombre"
+              name="nombre"
+              value={formData.nombre}
+              onChange={handleChange}
+              error={!!errors.nombre}
+              helperText={errors.nombre}
+            />
+          </Grid>
+          <Grid size={{xs:12, sm:6}}>
+            <TextField
+              fullWidth
+              label="Unidad"
+              name="unidad"
+              value={formData.unidad}
+              onChange={handleChange}
+            />
+          </Grid>
+          <Grid size={{xs:12, sm:6}}>
+            <TextField
+              fullWidth
+              label="Cantidad Inicial"
+              name="cantidad_stock"
+              type="number"
+              value={formData.cantidad_stock}
+              onChange={handleChange}
+              error={!!errors.cantidad_stock}
+              helperText={errors.cantidad_stock}
+            />
+          </Grid>
+          <Grid size={{xs:12, sm:6}}>
+            <TextField
+              fullWidth
+              label="Cantidad Inventario"
+              name="cantidad_inventario"
+              type="number"
+              value={formData.cantidad_inventario}
+              onChange={handleChange}
+            />
+          </Grid>
+          <Grid size={{xs:12, sm:6}}>
+            <TextField
+              fullWidth
+              label="Costo Compra"
+              name="costo_compra"
+              type="number"
+              value={formData.costo_compra}
+              onChange={handleChange}
+              error={!!errors.costo_compra}
+              helperText={errors.costo_compra}
+            />
+          </Grid>
+          <Grid size={{xs:12, sm:6}}>
+            <TextField
+              fullWidth
+              label="Costo Venta"
+              name="costo_venta"
+              type="number"
+              value={formData.costo_venta}
+              onChange={handleChange}
+            />
+          </Grid>
+          <Grid size={{xs:12, sm:6}}>
+            <TextField
+              fullWidth
+              label="Bodega"
+              name="bodega"
+              value={formData.bodega}
+              onChange={handleChange}
+              error={!!errors.bodega}
+              helperText={errors.bodega}
+            />
+          </Grid>
+          <Grid size={12}>
+            <FormControl fullWidth>
+              <InputLabel>Proveedor</InputLabel>
+              <Select
+                name="id_proveedor"
+                label='Proveedor'
+                value={formData.id_proveedor}
+                onChange={handleChange}
+                error={!!errors.id_proveedor}
+              >
+                <MenuItem value="">
+                  <em>Seleccione un proveedor</em>
+                </MenuItem>
+                {proveedores.map((proveedor) => (
+                  <MenuItem key={proveedor.id_proveedor} value={proveedor.id_proveedor}>
+                    {proveedor.nombre}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid size={12}>
+            <TextField
+              fullWidth
+              label="Descripción"
+              name="descripcion"
+              value={formData.descripcion}
+              onChange={handleChange}
+            />
+          </Grid>
+        </Grid>
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          sx={{ marginTop: "1rem", width: "100%" }}
+        >
+          Registrar Producto
+        </Button>
+      </form>
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={2000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        sx={{mt: 6, ml: 18}}
+      >
+        <Alert
+    onClose={handleCloseSnackbar}
+    severity={alertType}
+    variant="filled"
+    sx={{ width: '100%' }}
+  >
+    {mensaje}
+  </Alert>
+      </Snackbar>
+    </Box>
+  );
+};
 
-        if (!formData.cantidad_stock) {
-            newErrors.cantidad_stock = 'La cantidad es obligatoria.';
-        }
-        if (!formData.costo_compra) {
-            newErrors.costo_compra = 'El costo es obligatorio.';
-        }
-        if (!formData.bodega) {
-            newErrors.bodega = 'La bodega es obligatoria.';
-        }
-
-        setErrors(newErrors);
-
-        return Object.keys(newErrors).length === 0;
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        const token = localStorage.getItem('accessToken');
-
-        if (!token) {
-            console.log('Token no encontrado');
-            return;
-        }
-        const erroresValidacion = validateForm();
-        if (!erroresValidacion) {
-            return;
-        }
-        const id_usuario = decodeJWT(token);
-
-        const data = {
-            codigo: formData.codigo,
-            nombre: formData.nombre,
-            unidad: formData.unidad,
-            cantidad_stock: formData.cantidad_stock,
-            cantidad_inventario: formData.cantidad_inventario,
-            costo_compra: parseFloat(formData.costo_compra),
-            costo_venta: parseFloat(formData.costo_venta),
-            bodega: formData.bodega,
-            id_proveedor: parseInt(formData.id_proveedor),
-            descripcion: formData.descripcion,
-            id_usuario: id_usuario
-        }
-
-        try {
-            const respuesta = await axios.post("http://localhost:8000/api/v1/producto/",
-                data, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                },
-
-            });
-
-            setMensaje(respuesta.mensaje || "Registro exitoso.");
-            setFormData({
-                codigo: '',
-                nombre: '',
-                unidad: '',
-                cantidad_stock: '',
-                cantidad_inventario: '',
-                costo_compra: '',
-                costo_venta: '',
-                bodega: '',
-                id_proveedor: '',
-                descripcion: '',
-            })
-            setErrors({});
-        } catch (error) {
-            if (error.response) {
-                // El servidor respondió con un código de estado fuera del rango 2xx
-                console.error('Error en la respuesta del servidor:', error.response.data);
-                console.error('Código de estado:', error.response.status);
-                console.error('Encabezados:', error.response.headers);
-            } else if (error.request) {
-                // La solicitud fue hecha pero no se recibió respuesta
-                console.error('No se recibió respuesta del servidor:', error.request);
-            } else {
-                // Ocurrió un error al configurar la solicitud
-                console.error('Error al configurar la solicitud:', error.message);
-            }
-        }
-    };
-
-    return (
-        <>
-            <h2>Registro de Producto</h2>
-            {mensaje && <p>{mensaje}</p>}
-            <form onSubmit={handleSubmit} style={{ maxWidth: '400px', margin: '0 auto' }}>
-
-                <div style={{ marginBottom: '1rem' }}>
-                    <label htmlFor="codigo">Código:</label>
-                    <input
-                        type="text"
-                        id="codigo"
-                        name="codigo"
-                        value={formData.codigo}
-                        onChange={handleChange}
-                        style={{ width: '100%', padding: '0.5rem', marginTop: '0.5rem' }}
-                    />
-                    {errors.codigo && <p style={{ color: 'red' }}>{errors.codigo}</p>}
-                </div>
-                <div style={{ marginBottom: '1rem' }}>
-                    <label htmlFor="nombre">Nombre:</label>
-                    <input
-                        type="text"
-                        id="nombre"
-                        name="nombre"
-                        value={formData.nombre}
-                        onChange={handleChange}
-                        style={{ width: '100%', padding: '0.5rem', marginTop: '0.5rem' }}
-                    />
-                    {errors.nombre && <p style={{ color: 'red' }}>{errors.nombre}</p>}
-                </div>
-
-                <div style={{ marginBottom: '1rem' }}>
-                    <label htmlFor="unidad">Unidad:</label>
-                    <input
-                        type="text"
-                        id="unidad"
-                        name="unidad"
-                        value={formData.unidad}
-                        onChange={handleChange}
-                        style={{ width: '100%', padding: '0.5rem', marginTop: '0.5rem' }}
-                    />
-                    {errors.unidad && <p style={{ color: 'red' }}>{errors.unidad}</p>}
-                </div>
-
-                <div style={{ marginBottom: '1rem' }}>
-                    <label htmlFor="cantidad_stock">Cantidad Inicial:</label>
-                    <input
-                        type="number"
-                        id="cantidad_stock"
-                        name="cantidad_stock"
-                        value={formData.cantidad_stock}
-                        onChange={handleChange}
-                        style={{ width: '100%', padding: '0.5rem', marginTop: '0.5rem' }}
-                    />
-                    {errors.cantidad_stock && <p style={{ color: 'red' }}>{errors.cantidad_stock}</p>}
-                </div>
-                <div style={{ marginBottom: '1rem' }}>
-                    <label htmlFor="cantidad_inventario">cantidad_inventario :</label>
-                    <input
-                        type="number"
-                        id="cantidad_inventario"
-                        name="cantidad_inventario"
-                        value={formData.cantidad_inventario}
-                        onChange={handleChange}
-                        style={{ width: '100%', padding: '0.5rem', marginTop: '0.5rem' }}
-                    />
-                    {errors.cantidad_inventario && <p style={{ color: 'red' }}>{errors.cantidad_inventario}</p>}
-                </div>
-
-                <div style={{ marginBottom: '1rem' }}>
-                    <label htmlFor="costo_compra">Costo Compra:</label>
-                    <input
-                        type="number"
-                        id="costo_compra"
-                        name="costo_compra"
-                        value={formData.costo_compra}
-                        onChange={handleChange}
-                        style={{ width: '100%', padding: '0.5rem', marginTop: '0.5rem' }}
-                    />
-                    {errors.costo_compra && <p style={{ color: 'red' }}>{errors.costo_compra}</p>}
-                </div>
-
-                <div style={{ marginBottom: '1rem' }}>
-                    <label htmlFor="costo_venta">Costo Venta:</label>
-                    <input
-                        type="number"
-                        id="costo_venta"
-                        name="costo_venta"
-                        value={formData.costo_venta}
-                        onChange={handleChange}
-                        style={{ width: '100%', padding: '0.5rem', marginTop: '0.5rem' }}
-                    />
-                    {errors.costo_venta && <p style={{ color: 'red' }}>{errors.costo_venta}</p>}
-                </div>
-
-                <div style={{ marginBottom: '1rem' }}>
-                    <label htmlFor="bodega">bodega:</label>
-                    <input
-                        type="text"
-                        id="bodega"
-                        name="bodega"
-                        value={formData.bodega}
-                        onChange={handleChange}
-                        style={{ width: '100%', padding: '0.5rem', marginTop: '0.5rem' }}
-                    />
-                    {errors.bodega && <p style={{ color: 'red' }}>{errors.bodega}</p>}
-                </div>
-
-                <div style={{ marginBottom: '1rem' }}>
-                    <label htmlFor="id_proveedor">Proveedor:</label>
-                    <select
-                        id="id_proveedor"
-                        name="id_proveedor"
-                        value={formData.id_proveedor}
-                        onChange={handleChange}
-                        style={{ width: '100%', padding: '0.5rem', marginTop: '0.5rem' }}
-                    >
-                        <option value="">Seleccione un proveedor</option>
-                        {proveedores.map((proveedor) => (
-                            <option key={proveedor.id_proveedor} value={proveedor.id_proveedor}>
-                                {proveedor.nombre}
-                            </option>
-                        ))}
-                    </select>
-                    {errors.id_proveedor && <p style={{ color: 'red' }}>{errors.id_proveedor}</p>}
-                </div>
-                <div style={{ marginBottom: '1rem' }}>
-                    <label htmlFor="descripcion">Descripcion:</label>
-                    <input
-                        type="text"
-                        id="descripcion"
-                        name="descripcion"
-                        value={formData.descripcion}
-                        onChange={handleChange}
-                        style={{ width: '100%', padding: '0.5rem', marginTop: '0.5rem' }}
-                    />
-                    {errors.descripcion && <p style={{ color: 'red' }}>{errors.descripcion}</p>}
-                </div>
-
-                <button type="submit" style={{ padding: '0.5rem 1rem', backgroundColor: '#007BFF', color: 'white', border: 'none', cursor: 'pointer' }}>
-                    Ingresar Producto
-                </button>
-            </form>
-        </>
-    )
-}
-
-export default ProductosForm
+export default ProductosForm;

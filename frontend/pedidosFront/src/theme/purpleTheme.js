@@ -6,10 +6,10 @@ import { esES } from "@mui/material/locale";
 export const purpleTheme = createTheme({
     palette: {
         primary: {
-            main: '#055ae6'
+            main: '#4287f5'
         },
         secondary: {
-            main: '#05337d'
+            main: '#0eada8'
         },
         error: {
             main: red.A400

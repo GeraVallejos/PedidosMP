@@ -10,9 +10,8 @@ const MainLayout = ({ children }) => {
     const drawerWidth = 240;
 
     return (
-
-
-        <><Box sx={{
+        
+        <Box sx={{
             display: 'flex',
             height: '100vh',
             overflow: 'hidden',
@@ -24,14 +23,15 @@ const MainLayout = ({ children }) => {
                     flexGrow: 1,
                     p: 3,
                     width: { sm: `calc(100% - ${drawerWidth}px)`, xs:'100%' }, 
-                    height: '100vh',
+                    height: 'calc(100vh -10px)',
                     overflow: 'auto', 
-                    marginTop: { xs: '56px', sm: '64px' }
+                    marginTop: { xs: '56px', sm: '64px' },
+                    pb: 0
                 }}>
                 {children}
             </Box>
         </Box>
-        </>
+        
     )
 }
 

@@ -12,6 +12,7 @@ import Toolbar from '@mui/material/Toolbar';
 import { IconButton, Link, Typography } from '@mui/material';
 import ListAltOutlinedIcon from '@mui/icons-material/ListAltOutlined';
 import WidgetsOutlinedIcon from '@mui/icons-material/WidgetsOutlined';
+import { Link as RouterLink } from 'react-router';
 
 
 // eslint-disable-next-line react/prop-types
@@ -25,7 +26,7 @@ const SideBarComp = ({ drawerWidth }) => {
   const drawer = (
     <div>
       <Toolbar sx={{ display: 'flex', justifyContent: 'center',  }}>
-  <Link href='/' underline='none' style={{ display: 'flex', justifyContent: 'center', height:'68px', mt: '20px' }}>
+  <Link component={RouterLink} to='/' underline='none' style={{ display: 'flex', justifyContent: 'center', height:'68px', mt: '20px' }}>
  
     <Typography fontSize={20} sx={{mt:'21px'}}>JJ DETERGENTES</Typography>
   
@@ -35,7 +36,7 @@ const SideBarComp = ({ drawerWidth }) => {
       <List>
         <ListItem>
           <ListItemButton>
-            <Link href='/pedidos'>
+            <Link component={RouterLink} to='/pedidos'>
             <ListItemIcon>
             <ListAltOutlinedIcon />
               <ListItemText primary={'Pedidos'}/>
@@ -48,7 +49,7 @@ const SideBarComp = ({ drawerWidth }) => {
       <List>
         <ListItem>
           <ListItemButton>
-            <Link href='/facturas'>
+            <Link component={RouterLink} to='/facturas'>
             <ListItemIcon>
             <ListAltOutlinedIcon />
               <ListItemText primary={'Facturas'}/>

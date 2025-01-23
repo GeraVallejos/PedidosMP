@@ -56,7 +56,7 @@ export const authSlice = createSlice({
         isAuthenticated: !!localStorage.getItem('accessToken'),
         loading: false,
         error: null,
-        user:null
+        user: JSON.parse(localStorage.getItem('user')) || null,
     },
     reducers: {
         
@@ -87,6 +87,7 @@ export const authSlice = createSlice({
             .addCase(fetchUser.fulfilled, (state, action) => {
                 state.loading = false;
                 state.user = action.payload; 
+                localStorage.setItem('user', JSON.stringify(action.payload))
             })
             .addCase(fetchUser.rejected, (state, action) => {
                 state.loading = false;
