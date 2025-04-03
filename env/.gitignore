@@ -3,4 +3,4 @@
 /Lib
 /migrations
 db.sqlite3
-/back/pedidosMP/pedidosMP/passw
+env\back\pedidosMP\pedidosMP\passw.py
