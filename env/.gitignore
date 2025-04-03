@@ -3,3 +3,4 @@
 /Lib
 /migrations
 db.sqlite3
+/pedidosMP/secretos.py
