@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 from datetime import timedelta
+from secreto import secret_key
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,7 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-hn@gnv7%$@xf6k5m&t_=(6i)1%7vb9kd8%hhqbz1=sx1g13j+y'
+SECRET_KEY = secret_key
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -156,9 +157,9 @@ CORS_ALLOW_HEADERS = [
 ]
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=360),  # Tiempo de vida del token
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=360), # Tiempo de vida del token
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),     # Tiempo de vida del token de refresco
-    'ROTATE_REFRESH_TOKENS': True,
-    'BLACKLIST_AFTER_ROTATION': True,
-    'AUTH_HEADER_TYPES': ('Bearer',),               # Prefijo esperado en el encabezado
+    'ROTATE_REFRESH_TOKENS': True,                   # Genera nuevo refresh token en cada refresh
+    'BLACKLIST_AFTER_ROTATION': True,                # Invalida los refresh tokens anteriores
+    'AUTH_HEADER_TYPES': ('Bearer',),                # Prefijo esperado en el encabezado
 }

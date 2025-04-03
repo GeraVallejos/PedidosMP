@@ -1,0 +1,17 @@
+site_name: Pedidos Materias Primas
+nav:
+    - Introducción: index.md
+    - Guía de Instalación: 
+        - Django: instalacion/instalacion_Django.md
+        - React: instalacion/instalacion_React.md
+    - Estructura Backend: 
+        - PedidosMP: 
+            - Settings: compras/settings.md
+    
+theme: material
+markdown_extensions:
+  - codehilite
+  - pymdownx.superfences
+  - pymdownx.highlight
+  - pymdownx.tabbed
+  - pymdownx.inlinehilite

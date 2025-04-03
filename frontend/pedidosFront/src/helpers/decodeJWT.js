@@ -13,8 +13,7 @@ const decodeJWT = (token) => {
         const decodedPayload = JSON.parse(atob(payloadBase64));
         // Verifica si contiene el id_usuario
         const id_usuario = decodedPayload.id_usuario || decodedPayload.user_id; 
-        
-
+    
         return id_usuario;
     } catch (error) {
         console.error("Error al decodificar el token:", error);
