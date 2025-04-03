@@ -3,4 +3,4 @@
 /Lib
 /migrations
 db.sqlite3
-/pedidosMP/secretos.py
+/pedidosMP/pedidosMP/secreto.py
