@@ -6,7 +6,12 @@ nav:
         - React: instalacion/instalacion_React.md
     - Estructura Backend: 
         - PedidosMP: 
-            - Settings: compras/settings.md
+            - __pycache__.py: compras/pedidosMPmd/pycache.md
+            - __init__.py: compras/pedidosMPmd/init.md
+            - asgi.py: compras/pedidosMPmd/asgi.md
+            - settings.py: compras/pedidosMPmd/settings.md
+            - urls.py: compras/pedidosMPmd/urls.md
+            - wsgi.py: compras/pedidosMPmd/wsgi.md
     
 theme: material
 markdown_extensions:

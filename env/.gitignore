@@ -4,3 +4,6 @@
 /migrations
 db.sqlite3
 /back/pedidosMP/pedidosMP/passwords.py
+__pycache__/
+*.pyc
+*.pyo

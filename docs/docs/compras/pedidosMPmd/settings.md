@@ -1,4 +1,4 @@
-# <font color=#ff5733>Django Settings - Proyecto Compras</font>
+# Archivo `settings.py`
 
 Este archivo contiene la configuración básica para el proyecto **pedidosMP**, creado con **Django 5.1.4**
 
