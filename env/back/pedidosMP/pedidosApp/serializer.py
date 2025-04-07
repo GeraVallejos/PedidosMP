@@ -13,8 +13,6 @@ class PedidosSerializer(serializers.ModelSerializer):
     pedidos_producto = serializers.ReadOnlyField(source= 'id_producto.nombre')
     pedidos_proveedor = serializers.ReadOnlyField(source= 'id_proveedor.nombre')
     
-
-    
     class Meta():
         model = Pedidos
         exclude = ['id_usuario']
@@ -41,3 +39,4 @@ class ProductosSerializer(serializers.ModelSerializer):
         # Asigna automáticamente el id_usuario del usuario autenticado
         validated_data['id_usuario'] = self.context['request'].user 
         return super().create(validated_data)
+

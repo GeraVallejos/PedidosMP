@@ -12,6 +12,15 @@ nav:
             - settings.py: compras/pedidosMPmd/settings.md
             - urls.py: compras/pedidosMPmd/urls.md
             - wsgi.py: compras/pedidosMPmd/wsgi.md
+        - PedidosApp:
+            - migrations: compras/pedidosAPPmd/initial.md
+            - __init__.py: compras/pedidosAPPmd/initApp.md
+            - admin.py: compras/pedidosAPPmd/admin.md
+            - apps.py: compras/pedidosAPPmd/apps.md
+            - models.py: compras/pedidosAPPmd/models.md
+            - serializer.py : compras/pedidosAPPmd/serializer.md
+            - urls.py: compras/pedidosAPPmd/urlsApp.md
+            - views.py: compras/pedidosAPPmd/views.md
     
 theme: material
 markdown_extensions:

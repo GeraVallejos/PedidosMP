@@ -3,7 +3,7 @@ from rest_framework import routers
 from .views import ProductoView, UsuarioView, PedidosView, ProveedoresView
 
 
-#Se usa versionado de API
+#Se usa versionado de API en urls de pedidosApp
 
 router = routers.DefaultRouter()
 router.register(r'producto', ProductoView, 'producto')

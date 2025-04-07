@@ -1,4 +1,4 @@
-# Carpeta de proyecto Python
+# Carpeta de proyecto `__pycache__`
 
 En un proyecto Django (y en general en cualquier proyecto de Python), la carpeta __pycache__ es un directorio que Python crea automáticamente para almacenar archivos de bytecode compilado (con extensión .pyc o .pyo) de los módulos importados.
 
