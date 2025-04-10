@@ -4,39 +4,30 @@ import { useSelector, useDispatch } from "react-redux";
 import { logout } from "../auth/authSlice";
 
 export const useAuthGuard = () => {
-    const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const { token } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    //const token = localStorage.getItem('accessToken');
     if (!token) {
       navigate('/login');
+      return;
     }
-    // Decodificar el token para verificar su expiración
-    const decodeToken = (token) => {
-        try {
-            const payload = JSON.parse(atob(token.split(".")[1]));
-            return payload;
-        } catch (error) {
-            console.error("Error al decodificar el token:", error);
-            return null;
-        }
+
+    // Verificación básica del token (solo estructura, no expiración)
+    const isTokenValid = (token) => {
+      try {
+        const parts = token.split('.');
+        if (parts.length !== 3) return false;
+        return true;
+      } catch (error) {
+        return false;
+      }
     };
 
-    const payload = decodeToken(token);
-    if (!payload) {
-        // Si el token no es válido, forzar logout
-        dispatch(logout());
-        navigate("/login");
-        return;
-    }
-
-    const currentTime = Math.floor(Date.now() / 1000);
-    if (payload.exp < currentTime) {
-        // Si el token ha expirado, forzar logout
-        dispatch(logout());
-        navigate("/login");
+    if (!isTokenValid(token)) {
+      dispatch(logout());
+      navigate('/login');
     }
   }, [token, dispatch, navigate]);
 };

@@ -21,6 +21,9 @@ nav:
             - serializer.py : compras/pedidosAPPmd/serializer.md
             - urls.py: compras/pedidosAPPmd/urlsApp.md
             - views.py: compras/pedidosAPPmd/views.md
+    - Estructura Frontend:
+        - Auth:
+            - api.jsx: compras/frontend/auth/api.md
     
 theme: material
 markdown_extensions:

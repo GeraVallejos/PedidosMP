@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import api from '../helpers/interceptorJWT';
 
 // Endpoint del backend
 const API_URL = 'http://localhost:8000/api/token/';
@@ -10,7 +10,7 @@ export const login = createAsyncThunk(
     'auth/login',
     async ({ username, password }, { rejectWithValue }) => {
         try {
-            const response = await axios.post(API_URL, { username, password });
+            const response = await api.post(API_URL, { username, password });
             const { access, refresh } = response.data;
 
             // Guardar tokens en localStorage
@@ -29,6 +29,7 @@ export const logout = createAsyncThunk('auth/logout', async () => {
     // Elimina los tokens del localStorage
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
+    localStorage.removeItem('user');
     return true;
 });
 
@@ -37,7 +38,7 @@ export const fetchUser = createAsyncThunk(
     async (_, { rejectWithValue }) => {
         try {
             const token = localStorage.getItem('accessToken');
-            const response = await axios.get(USER_INFO_URL, {
+            const response = await api.get(USER_INFO_URL, {
                 headers: {
                     Authorization: `Bearer ${token}`, 
                 },
