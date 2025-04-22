@@ -23,7 +23,7 @@ nav:
             - views.py: compras/pedidosAPPmd/views.md
     - Estructura Frontend:
         - Auth:
-            - api.jsx: compras/frontend/auth/api.md
+            - authSlice.js: compras/frontend/auth/authSlice.md
     
 theme: material
 markdown_extensions:

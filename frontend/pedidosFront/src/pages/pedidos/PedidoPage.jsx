@@ -14,7 +14,7 @@ const PedidoPage = () => {
 
     <>
       <BotonCrear ruta={pedido} />
-      <GetPedidos estado={false} />
+      <GetPedidos estado={false} nombre_exportar={'Pedidos'} />
     </>
   )
 }

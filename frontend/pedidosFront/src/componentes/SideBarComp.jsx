@@ -49,7 +49,7 @@ const SideBarComp = ({ drawerWidth }) => {
       <List>
         <ListItem>
           <ListItemButton>
-            <Link component={RouterLink} to='/facturas'>
+            <Link component={RouterLink} to='/'>
             <ListItemIcon>
             <ListAltOutlinedIcon />
               <ListItemText primary={'Facturas'}/>

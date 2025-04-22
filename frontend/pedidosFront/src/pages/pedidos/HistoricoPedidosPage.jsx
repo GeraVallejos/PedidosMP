@@ -10,7 +10,7 @@ const HistoricoPedidosPage = () => {
 
   return (
 
-      <GetPedidos estado={true}/>
+      <GetPedidos estado={true} nombre_exportar={'Pedidos_historicos'}/>
   )
 }
 

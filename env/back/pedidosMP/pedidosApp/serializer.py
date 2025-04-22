@@ -30,6 +30,8 @@ class ProductosSerializer(serializers.ModelSerializer):
     productos_proveedor = ProveedoresSerializer(read_only=True)
     productos_usuario = serializers.ReadOnlyField(source = 'id_usuario.id')
     
+    
+    
     class Meta():
         model = Productos
         fields = '__all__'

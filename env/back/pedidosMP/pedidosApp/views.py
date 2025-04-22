@@ -5,6 +5,7 @@ from rest_framework import permissions
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from django.contrib.auth.hashers import check_password
 
 
 class ProductoView(viewsets.ModelViewSet):
@@ -30,6 +31,18 @@ class UsuarioView(viewsets.ModelViewSet):
         user = self.request.user  # Usuario autenticado
         serializer = self.get_serializer(user)
         return Response(serializer.data)
+    
+    @action(detail=False, methods=['post'], permission_classes=[permissions.IsAuthenticated])
+    def verify_password(self, request):
+        password = request.data.get('password')
+        
+        if not password:
+            return Response({'error': 'La contraseña es requerida'}, status=400)
+        
+        if check_password(password, request.user.password):
+            return Response({'valid': True})
+        else:
+            return Response({'valid': False}, status=400)
 
 class ProveedoresView(viewsets.ModelViewSet):
     serializer_class = ProveedoresSerializer

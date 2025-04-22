@@ -1,5 +1,5 @@
 import BotonCrear from "../../componentes/BotonCrear";
-import GetProductos from "../../componentes/GetProductos";
+import GetProductos from "../../componentes/productos/GetProductos";
 import { useAuthGuard } from "../../hooks/useAuthGuard";
 
 

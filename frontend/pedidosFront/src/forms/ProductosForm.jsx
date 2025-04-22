@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   TextField,
   Button,
@@ -14,6 +14,7 @@ import {
 import Grid from "@mui/material/Grid2";
 import axios from "axios";
 import decodeJWT from "../helpers/decodeJWT";
+import { useProveedorData } from "../hooks/useProveedorData";
 
 const ProductosForm = () => {
   const [formData, setFormData] = useState({
@@ -31,17 +32,12 @@ const ProductosForm = () => {
 
   const [errors, setErrors] = useState({});
   const [mensaje, setMensaje] = useState("");
-  const [proveedores, setProveedores] = useState([]);
+  const {proveedor} = useProveedorData();
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [alertType, setAlertType] = useState("success");
 
-  useEffect(() => {
-    const fetchProveedores = async () => {
-      const response = await axios.get("http://localhost:8000/api/v1/proveedor/");
-      setProveedores(response.data);
-    };
-    fetchProveedores();
-  }, []);
+
+  console.log(proveedor)
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -266,7 +262,7 @@ const ProductosForm = () => {
                 <MenuItem value="">
                   <em>Seleccione un proveedor</em>
                 </MenuItem>
-                {proveedores.map((proveedor) => (
+                {proveedor.map((proveedor) => (
                   <MenuItem key={proveedor.id_proveedor} value={proveedor.id_proveedor}>
                     {proveedor.nombre}
                   </MenuItem>
