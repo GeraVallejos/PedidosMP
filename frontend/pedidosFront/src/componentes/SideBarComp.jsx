@@ -1,124 +1,214 @@
 import * as React from 'react';
-import Box from '@mui/material/Box';
-import CssBaseline from '@mui/material/CssBaseline';
-import Divider from '@mui/material/Divider';
-import Drawer from '@mui/material/Drawer';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import Toolbar from '@mui/material/Toolbar';
-import { IconButton, Link, Typography } from '@mui/material';
-import ListAltOutlinedIcon from '@mui/icons-material/ListAltOutlined';
-import WidgetsOutlinedIcon from '@mui/icons-material/WidgetsOutlined';
-import { Link as RouterLink } from 'react-router';
+import {
+  Box,
+  CssBaseline,
+  Drawer,
+  List,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Toolbar,
+  IconButton,
+  Fab,
+  Typography,
+} from '@mui/material';
 
+import Inventory2SharpIcon from '@mui/icons-material/Inventory2Sharp';
+import HomeWorkIcon from '@mui/icons-material/HomeWork';
+import FactCheckIcon from '@mui/icons-material/FactCheck';
+import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
+import ChevronRightOutlinedIcon from '@mui/icons-material/ChevronRightOutlined';
+import Logo_JJ from '../assets/Logo_JJ.png'
+import { useLocation, Link as RouterLink } from 'react-router';
+
+const menuItems = [
+  { text: 'Pedidos', icon: <FactCheckIcon />, path: '/pedidos' },
+  { text: 'Productos', icon: <Inventory2SharpIcon />, path: '/productos' },
+  { text: 'Proveedores', icon: <HomeWorkIcon />, path: '/proveedores' },
+  { text: 'Facturas', icon: <ReceiptLongIcon />, path: '/facturas' },
+];
 
 // eslint-disable-next-line react/prop-types
 const SideBarComp = ({ drawerWidth }) => {
   const [mobileOpen, setMobileOpen] = React.useState(false);
+  const location = useLocation();
 
   const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen); // Cambiar el estado del Drawer
+    setMobileOpen(!mobileOpen);
   };
 
-  const drawer = (
-    <div>
-      <Toolbar sx={{ display: 'flex', justifyContent: 'center',  }}>
-  <Link component={RouterLink} to='/' underline='none' style={{ display: 'flex', justifyContent: 'center', height:'68px', mt: '20px' }}>
- 
-    <Typography fontSize={20} sx={{mt:'21px'}}>JJ DETERGENTES</Typography>
-  
-  </Link>
-</Toolbar>
-      <Divider />
-      <List>
-        <ListItem>
-          <ListItemButton>
-            <Link component={RouterLink} to='/pedidos'>
-            <ListItemIcon>
-            <ListAltOutlinedIcon />
-              <ListItemText primary={'Pedidos'}/>
-            </ListItemIcon>
-            </Link>
-          </ListItemButton>
-        </ListItem>
+  const drawerContent = (
+    <Box sx={{
+      display: 'flex',
+      flexDirection: 'column',
+      minHeight: '100%', // Asegura que ocupe toda la altura
+      backgroundColor: '#f8f9fa', // Color que se extenderá
+      borderRight: '1px solid #e0e0e0'
+    }}>
+      <Toolbar sx={{
+        minHeight: '64px !important',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        px: 2
+      }}>
+       <Box sx={{ 
+        display: 'flex',
+        alignItems: 'center',
+        gap: 1 // Espacio entre logo y texto
+      }}>
+        {/* Agrega la imagen del logo */}
+        <img 
+          src={Logo_JJ} 
+          alt="Logo JJ Detergentes" 
+          style={{ 
+            height: '32px', // Ajusta según necesites
+            width: 'auto',
+            objectFit: 'contain'
+          }} 
+        />
+        <Typography variant="h6" noWrap sx={{ 
+          fontSize: '14px', 
+          fontWeight: 'bold',
+          color: '#172b4d'
+        }}>
+          JJ DETERGENTES
+        </Typography>
+      </Box>
+
+        <IconButton
+          onClick={handleDrawerToggle}
+          size="small"
+          sx={{
+            color: '#42526e',
+            display: { xs: 'inline-flex', sm: 'none' }
+          }}
+        >
+          <ChevronRightOutlinedIcon fontSize="small" />
+        </IconButton>
+      </Toolbar>
+
+      <List sx={{ flexGrow: 1, px: 1 }}>
+        {menuItems.map(({ text, icon, path }) => {
+          const isActive = location.pathname.startsWith(path);
+
+          return (
+            <ListItemButton
+              key={text}
+              component={RouterLink}
+              to={path}
+              sx={{
+                borderRadius: '4px',
+                padding: '8px 12px',
+                minHeight: '36px',
+                mb: 0.5,
+                justifyContent: 'flex-start',
+                backgroundColor: isActive ? '#e4f0f6' : 'transparent',
+                color: isActive ? '#0079bf' : '#42526e',
+                '&:hover': {
+                  backgroundColor: isActive ? '#e4f0f6' : '#ebecf0',
+                },
+              }}
+            >
+              <ListItemIcon sx={{
+                color: isActive ? '#0079bf' : '#42526e',
+                minWidth: '36px',
+                justifyContent: 'center'
+              }}>
+                {icon}
+              </ListItemIcon>
+              <ListItemText
+                primary={text}
+                primaryTypographyProps={{
+                  fontSize: '14px',
+                  fontWeight: isActive ? '600' : '400'
+                }}
+              />
+            </ListItemButton>
+          );
+        })}
       </List>
-      <Divider />
-      <List>
-        <ListItem>
-          <ListItemButton>
-            <Link component={RouterLink} to='/'>
-            <ListItemIcon>
-            <ListAltOutlinedIcon />
-              <ListItemText primary={'Facturas'}/>
-            </ListItemIcon>
-            </Link>
-          </ListItemButton>
-        </ListItem>
-      </List>
-      
-      
-    </div>
+    </Box>
   );
 
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box sx={{ display: 'flex', minHeight: '100vh' }}>
       <CssBaseline />
-      <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            edge="start"
-            onClick={handleDrawerToggle}  // Cambia el estado del Drawer
-            sx={{ ml: 0.5, display: { xs: 'block', sm: 'none' } }}  // Solo visible en pantallas pequeñas
-          >
-            <WidgetsOutlinedIcon />
-            
-          </IconButton>      
 
-      {/* El Drawer para pantallas pequeñas */}
+      <Fab
+        color="primary"
+        aria-label="open drawer"
+        onClick={handleDrawerToggle}
+        sx={{
+          position: 'fixed',
+          left: 16,
+          top: '50%',
+          transform: 'translateY(-50%)',
+          zIndex: 1200,
+          display: { xs: 'flex', sm: 'none' },
+          backgroundColor: '#fff',
+          color: '#42526e',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+          '&:hover': {
+            backgroundColor: '#f5f5f5'
+          }
+        }}
+        size="small"
+      >
+        <ChevronRightOutlinedIcon />
+      </Fab>
+
       <Box
         component="nav"
-        sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
-        aria-label="mailbox folders"
+        sx={{
+          width: { sm: drawerWidth },
+          flexShrink: { sm: 0 }
+        }}
+        aria-label="sidebar"
       >
         <Drawer
           variant="temporary"
           open={mobileOpen}
-          onClose={handleDrawerToggle}  // Al hacer click fuera del Drawer también se cierra
-          ModalProps={{
-            keepMounted: true, // Mejor rendimiento al abrir/cerrar en móviles
-          }}
+          onClose={handleDrawerToggle}
+          ModalProps={{ keepMounted: true }}
           sx={{
             display: { xs: 'block', sm: 'none' },
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+            '& .MuiDrawer-paper': {
+              boxSizing: 'border-box',
+              width: drawerWidth,
+            },
           }}
         >
-          {drawer}
+          {drawerContent}
         </Drawer>
-        {/* El Drawer para pantallas grandes */}
+
         <Drawer
           variant="permanent"
           sx={{
             display: { xs: 'none', sm: 'block' },
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+            '& .MuiDrawer-paper': {
+              width: drawerWidth,
+              boxSizing: 'border-box',
+              borderRight: 'none',
+              height: '100vh', // Altura completa
+              overflowY: 'auto'  // Scroll si es necesario
+            },
           }}
           open
         >
-          {drawer}
+          {drawerContent}
         </Drawer>
       </Box>
 
-      {/* El contenido principal */}
       <Box
         component="main"
-        sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - ${drawerWidth}px)` } }}
-      >
-      </Box>
+        sx={{
+          flexGrow: 1,
+          p: 3,
+          width: { sm: `calc(100% - ${drawerWidth}px)` },
+        }}
+      />
     </Box>
-  
   );
-}
+};
 
 export default SideBarComp;

@@ -5,7 +5,7 @@ export const usePedidosData = (estado) => {
     const [pedido, setPedido] = useState([]);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [passwordError, setPasswordError] = useState(null);
+    const [errorModal, setErrorModal] = useState(null);
 
     // Efecto para cargar los pedidos
     useEffect(() => {
@@ -19,7 +19,7 @@ export const usePedidosData = (estado) => {
             } catch (error) {
                 setError('Error al cargar los datos');
                 setLoading(false);
-                console.error("Error fetching pedidos:", error);
+                console.error("Error cargando pedidos:", error);
             }
         };
 
@@ -48,7 +48,7 @@ export const usePedidosData = (estado) => {
             }
             return false;
         } catch (error) {
-            console.error("Error updating pedido:", error);
+            console.error("Error editando pedido:", error);
             return false;
         }
     };
@@ -104,16 +104,19 @@ export const usePedidosData = (estado) => {
     
                 if (deleteResponse.status === 204) {
                     setPedido(prev => prev.filter(item => item.id_pedido !== id));
-                    setPasswordError(null);
+                    setErrorModal(null);
                     return true;
                 }
             }
-            
-            setPasswordError('Contraseña incorrecta');
             return false;
+        // Errores se ven en el modal de confirmación de eliminación, como errorModal
         } catch (error) {
-            console.error("Error al verificar contraseña o eliminar:", error);
-            setPasswordError(error.response?.data?.error || 'Error al verificar la contraseña');
+            if (error.message == 'Network Error'){
+                setErrorModal('Error de red');
+            }
+            if (error.message == 'Request failed with status code 400')
+                setErrorModal('Contraseña Incorrecta')
+            
             return false;
         }
     };
@@ -122,10 +125,11 @@ export const usePedidosData = (estado) => {
         pedido,
         error,
         loading,
-        passwordError,
+        errorModal,
         updatePedido,
         deletePedido,
         setPedido,
+        setErrorModal,
         verifyPasswordAndDelete,
     };
 };

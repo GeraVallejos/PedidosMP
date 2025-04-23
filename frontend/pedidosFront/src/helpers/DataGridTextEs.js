@@ -2,7 +2,7 @@
 
 const esDataGrid = {
     noRowsLabel: 'Sin filas',
-  noResultsOverlayLabel: 'Resultados no encontrados',
+    noResultsOverlayLabel: 'Resultados no encontrados',
     toolbarDensity: 'Densidad',
     toolbarDensityLabel: 'Densidad',
     toolbarDensityCompact: 'Compacto',
@@ -54,8 +54,6 @@ const esDataGrid = {
     columnMenuUnsort: 'Desordenar',
     columnMenuSortAsc: 'Ordenar Acendente',
     columnMenuSortDesc: 'Ordenar Descendente',
-
-
 }
 
 export default esDataGrid;

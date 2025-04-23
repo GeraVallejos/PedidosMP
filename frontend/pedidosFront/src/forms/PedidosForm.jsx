@@ -1,74 +1,104 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
+import { useEffect, useRef, useState } from "react";
 import api from "../helpers/interceptorJWT";
+import BaseForm from "./BaseForm";
+import { 
+  TextField,
+  MenuItem,
+  FormHelperText,
+  InputAdornment, 
+  FormControl,
+  InputLabel,
+  Select
+} from '@mui/material';
+import Grid from "@mui/material/Grid2";
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider';
+import {AdapterDateFns} from '@mui/x-date-pickers/AdapterDateFns';
+import AppSnackbar from "../componentes/AppSnackbar";
 
-const PedidosForm = () => {
+// eslint-disable-next-line react/prop-types
+const PedidosForm = ({ onSaveSuccess }) => {
   const [formData, setFormData] = useState({
     cantidad: "",
-    fecha_despacho: "",
+    fecha_despacho: null,
     id_producto: "",
     id_proveedor: "",
   });
 
   const [errors, setErrors] = useState({});
-  const [mensaje, setMensaje] = useState("");
   const [productos, setProductos] = useState([]);
   const [proveedores, setProveedores] = useState([]);
-
-  const token = localStorage.getItem('accessToken');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const snackbarRef = useRef();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-          const [productosResponse, proveedoresResponse] = await Promise.all([
-              api.get("http://localhost:8000/api/v1/producto/"),
-              api.get("http://localhost:8000/api/v1/proveedor/")
-          ]);
+        const [productosResponse, proveedoresResponse] = await Promise.all([
+          api.get("http://localhost:8000/api/v1/producto/"),
+          api.get("http://localhost:8000/api/v1/proveedor/")
+        ]);
 
-          setProductos(productosResponse.data);
-          setProveedores(proveedoresResponse.data);
+        setProductos(productosResponse.data);
+        setProveedores(proveedoresResponse.data);
       } catch (error) {
-          console.error("Error al cargar datos:", error.message);
+        console.error("Error al cargar datos:", error.message);
+        snackbarRef.current.show("Error al cargar los datos necesarios", "error");
       }
-  };
+    };
 
-  fetchData();
-}, []);
-
+    fetchData();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+    // Limpiar error cuando el usuario escribe
+    if (errors[name]) {
+      setErrors({ ...errors, [name]: null });
+    }
+  };
+
+  const handleDateChange = (date) => {
+    setFormData({ ...formData, fecha_despacho: date });
   };
 
   const validateForm = () => {
     const newErrors = {};
     if (!formData.cantidad) {
-      newErrors.cantidad = "La cantidad es obligatoria.";
+      newErrors.cantidad = "La cantidad es obligatoria";
+    } else if (parseInt(formData.cantidad) <= 0) {
+      newErrors.cantidad = "La cantidad debe ser mayor a cero";
     }
+    
     if (!formData.id_producto) {
-      newErrors.id_producto = "El producto es obligatorio.";
+      newErrors.id_producto = "Debe seleccionar un producto";
     }
+    
     if (!formData.id_proveedor) {
-      newErrors.id_proveedor = "El proveedor es obligatorio.";
+      newErrors.id_proveedor = "Debe seleccionar un proveedor";
     }
+    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!token) {
-      console.error("Token no encontrado");
+    setIsSubmitting(true);
+    
+    if (!validateForm()) {
+      setIsSubmitting(false);
       return;
     }
 
-    const erroresValidacion = validateForm();
-    if (!erroresValidacion) {
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+      snackbarRef.current.show("No se encontró token de autenticación", "error");
+      setIsSubmitting(false);
       return;
     }
+
     const data = {
       cantidad: parseInt(formData.cantidad),
       fecha_despacho: formData.fecha_despacho || null,
@@ -77,7 +107,7 @@ const PedidosForm = () => {
     };
 
     try {
-      const respuesta = await axios.post(
+      const respuesta = await api.post(
         "http://localhost:8000/api/v1/pedido/",
         data,
         {
@@ -87,107 +117,167 @@ const PedidosForm = () => {
           },
         }
       );
-      setMensaje(respuesta.mensaje || "Registro exitoso.");
+      
+      snackbarRef.current.show(respuesta.data?.mensaje || "Pedido registrado exitosamente", "success");
+      if (onSaveSuccess) onSaveSuccess();
+      
+      // Reset form
       setFormData({
         cantidad: "",
-        fecha_despacho: "",
+        fecha_despacho: null,
         id_producto: "",
         id_proveedor: "",
-      })
+      });
+      
     } catch (error) {
       if (error.response) {
         console.error("Error en la respuesta del servidor:", error.response.data);
-        setMensaje(
-          error.response.data.mensaje || "Error al registrar el pedido."
+        snackbarRef.current.show(
+          error.response.data?.mensaje || "Error al registrar el pedido",
+          "error"
         );
       } else {
         console.error("Error en la solicitud:", error.message);
-        setMensaje("Error al registrar el pedido.");
+        snackbarRef.current.show("Error al conectar con el servidor", "error");
       }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
     <>
-      <h2>Registro de Pedido</h2>
-      {mensaje && <p>{mensaje}</p>}
-      <form onSubmit={handleSubmit} style={{ maxWidth: "400px", margin: "0 auto" }}>
-        <div style={{ marginBottom: "1rem" }}>
-          <label htmlFor="cantidad">Cantidad:</label>
-          <input
-            type="number"
-            id="cantidad"
-            name="cantidad"
-            value={formData.cantidad}
-            onChange={handleChange}
-            style={{ width: "100%", padding: "0.5rem", marginTop: "0.5rem" }}
-          />
-          {errors.cantidad && <p style={{ color: "red" }}>{errors.cantidad}</p>}
-        </div>
+    <BaseForm
+      title="Nuevo Pedido"
+      onSave={handleSubmit}
+      saveText={isSubmitting ? "Registrando..." : "Registrar Pedido"}
+      maxWidth="md"
+    >
+     
+      {/* Campo Cantidad */}
+      <Grid size={{xs:12, sm:6}}>
+        <TextField
+          fullWidth
+          label="Cantidad"
+          name="cantidad"
+          value={formData.cantidad}
+          onChange={handleChange}
+          required
+          type="number"
+          error={!!errors.cantidad}
+          helperText={errors.cantidad}
+          InputProps={{
+            endAdornment: <InputAdornment position="end">unidades</InputAdornment>,
+            inputProps: { min: 1 }
+          }}
+          sx={{
+            '& .MuiOutlinedInput-root': {
+              '& fieldset': {
+                borderColor: '#e0e0e0',
+              },
+              '&:hover fieldset': {
+                borderColor: '#a7b6c2',
+              },
+            }
+          }}
+        />
+      </Grid>
 
-        <div style={{ marginBottom: "1rem" }}>
-          <label htmlFor="fecha_despacho">Fecha de Despacho:</label>
-          <input
-            type="datetime-local"
-            id="fecha_despacho"
-            name="fecha_despacho"
+      {/* Campo Fecha de Despacho */}
+      <Grid size={{xs:12, sm:6}}>
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <DatePicker
+            label="Fecha de Despacho"
             value={formData.fecha_despacho}
-            onChange={handleChange}
-            style={{ width: "100%", padding: "0.5rem", marginTop: "0.5rem" }}
+            onChange={handleDateChange}
+            slotProps={{
+              textField: {
+                fullWidth: true,
+                sx: {
+                  '& .MuiOutlinedInput-root': {
+                    '& fieldset': {
+                      borderColor: '#e0e0e0',
+                    },
+                    '&:hover fieldset': {
+                      borderColor: '#a7b6c2',
+                    },
+                  },
+                },
+              }
+            }}
           />
-        </div>
+        </LocalizationProvider>
+      </Grid>
 
-        <div style={{ marginBottom: "1rem" }}>
-          <label htmlFor="id_producto">Producto:</label>
-          <select
-            id="id_producto"
+      {/* Campo Producto */}
+      <Grid xs={12} sm={6} size={12}>
+        <FormControl fullWidth error={!!errors.id_producto}>
+          <InputLabel id="producto-label">Producto *</InputLabel>
+          <Select
+            labelId="producto-label"
+            label="Producto *"
             name="id_producto"
             value={formData.id_producto}
             onChange={handleChange}
-            style={{ width: "100%", padding: "0.5rem", marginTop: "0.5rem" }}
+            sx={{
+              '& .MuiOutlinedInput-notchedOutline': {
+                borderColor: '#e0e0e0',
+              },
+              '&:hover .MuiOutlinedInput-notchedOutline': {
+                borderColor: '#a7b6c2',
+              },
+            }}
           >
-            <option value="">Seleccione un producto</option>
+            <MenuItem value="">
+              <em>Seleccione un producto</em>
+            </MenuItem>
             {productos.map((producto) => (
-              <option key={producto.id_producto} value={producto.id_producto}>
+              <MenuItem key={producto.id_producto} value={producto.id_producto}>
                 {producto.nombre}
-              </option>
+              </MenuItem>
             ))}
-          </select>
-          {errors.id_producto && <p style={{ color: "red" }}>{errors.id_producto}</p>}
-        </div>
+          </Select>
+          {errors.id_producto && (
+            <FormHelperText>{errors.id_producto}</FormHelperText>
+          )}
+        </FormControl>
+      </Grid>
 
-        <div style={{ marginBottom: "1rem" }}>
-          <label htmlFor="id_proveedor">Proveedor:</label>
-          <select
-            id="id_proveedor"
+      {/* Campo Proveedor */}
+      <Grid xs={12} sm={6} size={12}>
+        <FormControl fullWidth error={!!errors.id_proveedor}>
+          <InputLabel id="proveedor-label">Proveedor *</InputLabel>
+          <Select
+            labelId="proveedor-label"
+            label="Proveedor *"
             name="id_proveedor"
             value={formData.id_proveedor}
             onChange={handleChange}
-            style={{ width: "100%", padding: "0.5rem", marginTop: "0.5rem" }}
+            sx={{
+              '& .MuiOutlinedInput-notchedOutline': {
+                borderColor: '#e0e0e0',
+              },
+              '&:hover .MuiOutlinedInput-notchedOutline': {
+                borderColor: '#a7b6c2',
+              },
+            }}
           >
-            <option value="">Seleccione un proveedor</option>
+            <MenuItem value="">
+              <em>Seleccione un proveedor</em>
+            </MenuItem>
             {proveedores.map((proveedor) => (
-              <option key={proveedor.id_proveedor} value={proveedor.id_proveedor}>
+              <MenuItem key={proveedor.id_proveedor} value={proveedor.id_proveedor}>
                 {proveedor.nombre}
-              </option>
+              </MenuItem>
             ))}
-          </select>
-          {errors.id_proveedor && <p style={{ color: "red" }}>{errors.id_proveedor}</p>}
-        </div>
-
-        <button
-          type="submit"
-          style={{
-            padding: "0.5rem 1rem",
-            backgroundColor: "#007BFF",
-            color: "white",
-            border: "none",
-            cursor: "pointer",
-          }}
-        >
-          Registrar Pedido
-        </button>
-      </form>
+          </Select>
+          {errors.id_proveedor && (
+            <FormHelperText>{errors.id_proveedor}</FormHelperText>
+          )}
+        </FormControl>
+      </Grid>
+    </BaseForm>
+    <AppSnackbar ref={snackbarRef} />
     </>
   );
 };

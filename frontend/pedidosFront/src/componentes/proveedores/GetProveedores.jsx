@@ -1,13 +1,13 @@
-import { useProductosData } from "../../hooks/useProductosData";
 import { useProveedorData } from "../../hooks/useProveedorData";
 import { useTablaOperaciones } from "../../hooks/useTablaOperaciones";
 import ModalDetallePedido from "../../modals/ModalDetallePedido";
 import GetData from "../GetData";
-import ColumnaProductos from "./ColumnaProductos";
+import ColumnaProveedores from "./ColumnaProveedores";
+
 
 const GetProductos = () => {
-    const { producto, loading, error, updateProducto, deleteProducto, setProducto } = useProductosData();
-    const {proveedor} = useProveedorData();
+    const { proveedor, loading, error, updateProveedor, deleteProveedor, setProveedor } = useProveedorData();
+
     const {
         selectedRow,
         openModal,
@@ -25,59 +25,48 @@ const GetProductos = () => {
         if (!dialogParams) return;
 
         const { id, currentValue, rowData } = dialogParams;
-        const success = await updateProducto(id, {
+        const success = await updateProveedor(id, {
             ...rowData,
             resuelto: !currentValue,
         });
 
         if (success) {
-            setProducto(prev => prev.map(p => p.id_pedido === id ? { ...p, resuelto: !currentValue } : p));
+            setProveedor(prev => prev.map(p => p.id_pedido === id ? { ...p, resuelto: !currentValue } : p));
         }
 
         handleCloseDialog();
     };
 
-    const columns = ColumnaProductos({
+    const columns = ColumnaProveedores({
         onStatusChange: handleOpenDialog,
         onEdit: handleEdit,
-        onDelete: (id) => deleteProducto(id),
+        onDelete: (id) => deleteProveedor(id),
     });
 
-    // Se crea un mapa de proveedores para búsqueda rápida
-    const proveedorMap = {};
-    proveedor.forEach(prov => {
-        proveedorMap[prov.id_proveedor] = prov.nombre;
-    });
 
-    // Añadir el nombre del proveedor a cada producto
-    const productosConProveedor = producto.map(prod => ({
-        ...prod,
-    // se realiza la comparativa y se asigna el nombre del proveedor
-        nombre_proveedor: proveedorMap[prod.id_proveedor] || 'Sin proveedor'
-    }));
 
     const exportMapping = {
-        codigo: "Codigo",
         nombre: "Nombre",
-        unidad: "Unidad",
-        fecha_creacion: "Fecha creacion",
-        fecha_modificacion: "Fecha modificacion",
-        costo_compra: "Costo compra",
-        costo_venta: "Costo venta",
-        bodega: "Bodega",
-        nombre_proveedor: 'Proveedor',
+        rut: "Rut",
+        direccion: "Direccion",
+        comuna: "Comuna",
+        contacto: "Contacto",
+        telefono: "Telefono",
         descripcion: "Descripcion",
+        giro: "Giro",
+        fecha_creacion: "Fecha Creacion",
+        fecha_modificacion: "Fecha Modificacion",
     };
 
-    const exportar = () => handleExport(productosConProveedor, "Productos", exportMapping);
+    const exportar = () => handleExport(proveedor, "Proveedores", exportMapping);
 
     return (
         <GetData
-            data={producto}
+            data={proveedor}
             loading={loading}
             error={error}
             columns={columns}
-            getRowId={(row) => row.id_producto}
+            getRowId={(row) => row.id_proveedor}
             openModal={openModal}
             selectedRow={selectedRow}
             openDialog={openDialog}

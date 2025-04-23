@@ -7,7 +7,7 @@ import SidebarComp from "../componentes/SideBarComp"
 // eslint-disable-next-line react/prop-types
 const MainLayout = ({ children }) => {
 
-    const drawerWidth = 240;
+    const drawerWidth = 200;
 
     return (
         

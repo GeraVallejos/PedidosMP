@@ -11,6 +11,9 @@ import CrearProductosPage from "../pages/productos/CrearProductosPage";
 import CrearProveedorPage from "../pages/proveedores/CrearProveedorPage";
 import CrearPedidosPage from "../pages/pedidos/CrearPedidosPage";
 import HistoricoPedidosPage from "../pages/pedidos/HistoricoPedidosPage";
+import FacturasPage from "../pages/facturas/FacturasPage";
+import EnProcesoPedidosPage from "../pages/pedidos/EnProcesoPedidosPage";
+
 
 
 export const getRoutes = () => createBrowserRouter([
@@ -32,15 +35,15 @@ export const getRoutes = () => createBrowserRouter([
                 element: <ProductosPages />,
             },
             {
-                path: "productos-crear",
+                path: "productos/nuevo",
                 element: <CrearProductosPage />,
             },
             {
-                path: "proveedor",
+                path: "proveedores",
                 element: <ProveedorPage />,
             },
             {
-                path: "proveedor-crear",
+                path: "proveedores/nuevo",
                 element: <CrearProveedorPage />,
             },
             {
@@ -48,12 +51,20 @@ export const getRoutes = () => createBrowserRouter([
                 element: <PedidoPage />,
             },
             {
-                path: "pedidos-crear",
+                path: "pedidos/nuevo",
                 element: <CrearPedidosPage />,
             },
             {
-                path: "pedidos-historico",
+                path: "pedidos/enProceso",
+                element: <EnProcesoPedidosPage />,
+            },
+            {
+                path: "pedidos/historico",
                 element: <HistoricoPedidosPage />,
+            },
+            {
+                path: "facturas",
+                element: <FacturasPage />,
             },
 
         ]

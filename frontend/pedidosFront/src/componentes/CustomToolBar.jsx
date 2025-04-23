@@ -2,7 +2,6 @@ import { Box, Button } from "@mui/material"
 import {
     GridToolbarColumnsButton,
     GridToolbarContainer,
-    GridToolbarDensitySelector,
     GridToolbarFilterButton
 }
     from "@mui/x-data-grid"
@@ -14,7 +13,6 @@ const CustomToolBar = ({ onExport }) => {
         <GridToolbarContainer>
             <GridToolbarColumnsButton />
             <GridToolbarFilterButton />
-            <GridToolbarDensitySelector />
             <Box sx={{ flexGrow: 1 }} />
             <Button
                 onClick={onExport}

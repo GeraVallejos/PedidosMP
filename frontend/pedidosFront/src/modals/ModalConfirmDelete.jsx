@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import {
     Dialog,
     DialogTitle,
@@ -10,12 +10,12 @@ import {
     Typography,
     CircularProgress,
     Box,
-    Snackbar,
-    Alert,
     IconButton
 } from '@mui/material';
 import WarningAmberRoundedIcon from '@mui/icons-material/WarningAmberRounded';
 import CloseIcon from '@mui/icons-material/Close';
+import AppSnackbar from '../componentes/AppSnackbar';
+
 
 const ModalConfirmDelete = ({
     open,
@@ -23,27 +23,10 @@ const ModalConfirmDelete = ({
     onConfirm,
     pedidoId,
     isLoading = false,
-    onShowNotification
 }) => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState(null);
-    const [localNotification, setLocalNotification] = useState({
-        open: false,
-        message: '',
-        severity: 'success'
-    });
-
-    const showNotification = (message, severity = 'success') => {
-        setLocalNotification({
-            open: true,
-            message,
-            severity
-        });
-    };
-
-    const handleCloseNotification = () => {
-        setLocalNotification(prev => ({ ...prev, open: false }));
-    };
+    const snackbarRef = useRef();
 
     const handleSubmit = async () => {
         if (!password.trim()) {
@@ -54,19 +37,11 @@ const ModalConfirmDelete = ({
         try {
             const success = await onConfirm(pedidoId, password);
             if (success) {
-                showNotification('Pedido eliminado correctamente');
-
-                if (onShowNotification) {
-                    onShowNotification('Pedido eliminado correctamente', 'success');
-                }
-
                 handleClose();
             }
         } catch (err) {
-            showNotification('Error al eliminar el pedido', 'error');
-            if (onShowNotification) {
-                onShowNotification('Error al eliminar el pedido', 'error');
-            }
+           
+            console.error(err.message)
         }
     };
 
@@ -85,8 +60,11 @@ const ModalConfirmDelete = ({
                 fullWidth
                 PaperProps={{
                     sx: {
-                        borderRadius: 3,
-                        p: 0
+                        borderRadius: 2,
+                        p: 0,
+                        border: '1px solid #e0e0e0',
+                        boxShadow: '0 1px 1px rgba(0,0,0,0.1)',
+                        backgroundColor: '#ffffff'
                     }
                 }}
             >
@@ -96,7 +74,8 @@ const ModalConfirmDelete = ({
                         textAlign: 'center',
                         px: 4,
                         py: 3,
-                        borderBottom: '1px solid #eee',
+                        borderBottom: '1px solid #e0e0e0',
+                        backgroundColor: '#f8f9fa'
                     }}
                 >
                     <Box
@@ -107,9 +86,20 @@ const ModalConfirmDelete = ({
                             transform: 'translateY(-50%)'
                         }}
                     >
-                        <WarningAmberRoundedIcon color="warning" sx={{ fontSize: 28 }} />
+                        <WarningAmberRoundedIcon 
+                            sx={{ 
+                                fontSize: 28,
+                                color: '#ff9800' 
+                            }} 
+                        />
                     </Box>
-                    <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                    <Typography 
+                        variant="h6" 
+                        sx={{ 
+                            fontWeight: 600,
+                            color: '#42526e'
+                        }}
+                    >
                         Confirmar Eliminación
                     </Typography>
                     <IconButton
@@ -118,31 +108,29 @@ const ModalConfirmDelete = ({
                         sx={{
                             position: 'absolute',
                             right: 8,
-                            top: 8
+                            top: 8,
+                            color: '#42526e',
+                            '&:hover': {
+                                backgroundColor: '#ebecf0'
+                            }
                         }}
                     >
                         <CloseIcon />
                     </IconButton>
                 </DialogTitle>
 
-                <form
-                    onSubmit={(e) => {
-                        e.preventDefault();
-                        handleSubmit();
-                    }}
-                >
-                    <input
-                        type="text"
-                        style={{ display: 'none' }}
-                        autoComplete="username"
-                        aria-hidden="true"
-                    />
+                <form onSubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
+                    <input type="text" style={{ display: 'none' }} autoComplete="username" />
 
-                    <DialogContent sx={{ pt: 3, px: 4 }}>
-                        <Typography sx={{ mb: 1 }}>
-                            Para eliminar este pedido, ingresa tu contraseña para verificar tu identidad.
+                    <DialogContent sx={{ pt: 3, px: 4, pb: 2 }}>
+                        <Typography sx={{ mb: 1, color: '#42526e' }}>
+                            Para eliminar este pedido, ingresa tu contraseña.
                         </Typography>
-                        <Typography variant="body2" color="error" sx={{ mb: 2 }}>
+                        <Typography variant="body2" sx={{ 
+                            mb: 2, 
+                            color: '#ff4444',
+                            fontWeight: 500
+                        }}>
                             Esta acción no se puede deshacer.
                         </Typography>
 
@@ -162,23 +150,52 @@ const ModalConfirmDelete = ({
                             helperText={error}
                             disabled={isLoading}
                             autoComplete="current-password"
+                            sx={{
+                                '& .MuiOutlinedInput-root': {
+                                    '& fieldset': {
+                                        borderColor: '#e0e0e0',
+                                    },
+                                    '&:hover fieldset': {
+                                        borderColor: '#a7b6c2',
+                                    },
+                                }
+                            }}
                         />
                     </DialogContent>
 
-                    <DialogActions sx={{ justifyContent: 'space-between', px: 4, pb: 3, pt: 1 }}>
+                    <DialogActions sx={{ 
+                        justifyContent: 'space-between', 
+                        px: 4, 
+                        pb: 3, 
+                        pt: 1,
+                        borderTop: '1px solid #e0e0e0'
+                    }}>
                         <Button
                             onClick={handleClose}
                             disabled={isLoading}
                             variant="outlined"
+                            sx={{
+                                color: '#42526e',
+                                borderColor: '#e0e0e0',
+                                '&:hover': {
+                                    backgroundColor: '#ebecf0',
+                                    borderColor: '#e0e0e0'
+                                }
+                            }}
                         >
                             Cancelar
                         </Button>
                         <Button
                             type="submit"
                             disabled={isLoading}
-                            color="error"
                             variant="contained"
                             endIcon={isLoading && <CircularProgress size={20} />}
+                            sx={{
+                                backgroundColor: '#ff4444',
+                                '&:hover': {
+                                    backgroundColor: '#cc0000'
+                                }
+                            }}
                         >
                             {isLoading ? 'Eliminando...' : 'Eliminar'}
                         </Button>
@@ -186,22 +203,7 @@ const ModalConfirmDelete = ({
                 </form>
             </Dialog>
 
-            {!onShowNotification && (
-                <Snackbar
-                    open={localNotification.open}
-                    autoHideDuration={3500}
-                    onClose={handleCloseNotification}
-                    anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-                >
-                    <Alert
-                        onClose={handleCloseNotification}
-                        severity={localNotification.severity}
-                        sx={{ width: '100%' }}
-                    >
-                        {localNotification.message}
-                    </Alert>
-                </Snackbar>
-            )}
+            <AppSnackbar ref={snackbarRef} />
         </>
     );
 };

@@ -41,6 +41,7 @@ const GetData = ({
                     <DataGrid
                         rows={data}
                         columns={columns}
+                        density="compact"
                         pageSize={5}
                         rowsPerPageOptions={[10]}
                         disableRowSelectionOnClick
@@ -49,6 +50,9 @@ const GetData = ({
                         slotProps={{ toolbar: { onExport } }}
                         localeText={{
                             noRowsLabel: "No hay datos disponibles",
+                            toolbarColumns: 'Columnas',
+                            toolbarFilters: 'Filtros',
+                            
                         }}
                         initialState={{
                             sorting: {

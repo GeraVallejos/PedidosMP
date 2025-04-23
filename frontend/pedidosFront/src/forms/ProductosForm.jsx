@@ -111,8 +111,7 @@ const ProductosForm = () => {
           "Content-Type": "application/json",
         },
       });
-      console.log(respuesta)
-
+      
       setMensaje(respuesta.mensaje || "Registro exitoso.");
       setAlertType('success')
       setOpenSnackbar(true)

@@ -1,24 +1,24 @@
 // 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useTablaOperaciones } from "../../hooks/useTablaOperaciones";
 import { usePedidosData } from "../../hooks/usePedidosData";
 import ColumnaPedidos from "./ColumnaPedidos";
 import ModalDetallePedido from "../../modals/ModalDetallePedido";
 import ModalConfirmDelete from "../../modals/ModalConfirmDelete";
 import GetData from "../GetData";
-import { Snackbar, Alert } from '@mui/material';
+import AppSnackbar from '../AppSnackbar';
 
 // eslint-disable-next-line react/prop-types
 const GetPedidos = ({ estado, nombre_exportar }) => {
-    const { 
-        pedido, 
-        loading, 
-        error, 
-        updatePedido, 
-        verifyPasswordAndDelete, 
+    const {
+        pedido,
+        loading,
+        error,
+        updatePedido,
+        verifyPasswordAndDelete,
         setPedido,
-        passwordError,
-        setPasswordError
+        errorModal,
+        setErrorModal,
     } = usePedidosData(estado);
 
     const {
@@ -37,20 +37,14 @@ const GetPedidos = ({ estado, nombre_exportar }) => {
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [pedidoToDelete, setPedidoToDelete] = useState(null);
     const [isDeleting, setIsDeleting] = useState(false);
+    const snackbarRef = useRef();
 
-    // Estados para Snackbar (notificaciones)
-    const [snackbar, setSnackbar] = useState({
-        open: false,
-        message: '',
-        severity: 'success' 
-    });
 
-    const showSnackbar = (message, severity) => {
-        setSnackbar({ open: true, message, severity });
-    };
-
-    const closeSnackbar = () => {
-        setSnackbar(prev => ({ ...prev, open: false }));
+    // Mensaje dinámico para el diálogo
+    const getDialogMessage = (currentValue) => {
+        return currentValue
+            ? "Esta acción reactivará este pedido (ya no estará marcado como terminado)"
+            : "Esta acción dará por terminado este pedido";
     };
 
     // Lógica para actualizar estado del pedido
@@ -65,21 +59,13 @@ const GetPedidos = ({ estado, nombre_exportar }) => {
 
         if (success) {
             setPedido(prev => prev.map(p => p.id_pedido === id ? { ...p, resuelto: !currentValue } : p));
-            showSnackbar(
-                `Pedido ${!currentValue ? 'marcado como terminado' : 'reactivado'}`,
-                'success'
-            );
+            snackbarRef.current.show(`Pedido ${!currentValue ? 'marcado como terminado' : 'reactivado'}`,
+                'success');
         }
 
         handleCloseDialog();
     };
 
-    // Mensaje dinámico para el diálogo
-    const getDialogMessage = (currentValue) => {
-        return currentValue 
-            ? "Esta acción reactivará este pedido (ya no estará marcado como terminado)" 
-            : "Esta acción dará por terminado este pedido";
-    };
 
     // Manejar eliminación con verificación de contraseña
     const handleDeleteClick = (id) => {
@@ -92,14 +78,14 @@ const GetPedidos = ({ estado, nombre_exportar }) => {
         try {
             const success = await verifyPasswordAndDelete(id, password);
             if (success) {
-                showSnackbar('Pedido eliminado correctamente', 'success');
+                snackbarRef.current.show("Pedido borrado con éxito", "success");
                 setDeleteModalOpen(false);
-            } else if (passwordError) {
-                showSnackbar(passwordError, 'error');
+            } else if (errorModal) {
+                snackbarRef.current.show(errorModal, "error");
             }
             return success;
         } catch (error) {
-            showSnackbar('Error al eliminar el pedido', 'error');
+            snackbarRef.current.show("Error al eliminar el pedido", "error");
             return false;
         } finally {
             setIsDeleting(false);
@@ -144,33 +130,18 @@ const GetPedidos = ({ estado, nombre_exportar }) => {
                 ModalDetalleEntidad={ModalDetallePedido}
                 orden='fecha_pedido'
             />
-            
+
             <ModalConfirmDelete
                 open={deleteModalOpen}
                 onClose={() => {
                     setDeleteModalOpen(false);
-                    setPasswordError(null);
+                    setErrorModal(null);
                 }}
                 onConfirm={handleConfirmDelete}
                 pedidoId={pedidoToDelete}
                 isLoading={isDeleting}
             />
-
-            {/* Snackbar nativo de Material-UI */}
-            <Snackbar
-                open={snackbar.open}
-                autoHideDuration={3500}
-                onClose={closeSnackbar}
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-            >
-                <Alert 
-                    onClose={closeSnackbar} 
-                    severity={snackbar.severity}
-                    sx={{ width: '100%' }}
-                >
-                    {snackbar.message}
-                </Alert>
-            </Snackbar>
+            <AppSnackbar ref={snackbarRef} />
         </>
     );
 };
